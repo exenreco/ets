@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './layouts/dashboard/dashboard.component';
 import { GlobalPagesComponent } from './layouts/global-pages/global-pages.component';
-import { SigninComponent } from './signin/signin.component';
+import { SigninComponent } from './security/signin/signin.component';
 import { AddExpenseComponent } from './add-expense/add-expense.component';
 import { OverviewComponent } from './overview/overview.component';
 
