@@ -1,9 +1,11 @@
-import { Routes } from '@angular/router';
+import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { DashboardComponent } from './layouts/dashboard/dashboard.component';
 import { GlobalPagesComponent } from './layouts/global-pages/global-pages.component';
 import { SigninComponent } from './signin/signin.component';
 import { AddExpenseComponent } from './add-expense/add-expense.component';
+import { OverviewComponent } from './overview/overview.component';
 
 
 
@@ -26,9 +28,9 @@ export const globalPagesRoutes: Routes = [
 ];
 
 export const dashboardPagesRoutes: Routes = [
-  { path: '', component: HomeComponent },
-  { path: 'overview', component: HomeComponent },
-  { path: 'add-expense', component: AddExpenseComponent },
+  { path: '', component: OverviewComponent, data: {title:'Account Overview'} },
+  { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
+  { path: 'add-expense', component: AddExpenseComponent, data: {title:'Add Expense'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
   //{ path: 'list-expenses', component: },
@@ -47,3 +49,10 @@ export const routes: Routes = [
     children: dashboardPagesRoutes
   }
 ];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+
+export class AppRoutingModule {}

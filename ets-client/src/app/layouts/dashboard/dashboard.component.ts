@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -599,8 +601,11 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
     }
   `
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit, OnDestroy {
+
   title = 'Dashboard';
+
+  private sub!: Subscription;
 
   // Track menu, submenu and account states individually
   submenuStates: { [key: string]: boolean } = {
@@ -609,6 +614,36 @@ export class DashboardComponent {
     expenses: true,
     categories: true
   };
+
+  constructor( private router: Router, private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+
+    this.sub = this.router.events.pipe(
+      filter(e => e instanceof NavigationEnd),
+
+      map(() => {
+        let child = this.route.firstChild;
+        while (child?.firstChild) {
+          child = child.firstChild;
+        }
+        return child;
+      }),
+
+      filter(r => !!r),
+
+      map(r => {
+        const data = r!.snapshot.data;
+        return (data['title'] as string) || 'Dashboard';
+      })
+
+    ).subscribe(title => this.title = title);
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
+  }
 
   // Toggle specific submenu
   toggleSubmenu(menuKey: string): void {

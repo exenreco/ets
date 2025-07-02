@@ -119,8 +119,6 @@ import { NgIf, NgFor } from '@angular/common';
 })
 export class AddExpenseComponent {
 
-  title = "Add Expense"; // set the page title
-
   userID = 1000; // will be updated after authService
 
   categories: any[] = [];
