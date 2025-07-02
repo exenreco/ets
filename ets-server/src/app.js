@@ -20,7 +20,7 @@ indexRouter = require('./routes/index'),
 usersRouter = require('./routes/users'),
 securityRouter = require('./routes/security'),
 expensesRouter = require('./routes/expenses'),
-catigoriesRouter = require('./routes/catigories');
+categoriesRouter = require('./routes/categories');
 
 // Variable declaration for the express app
 let app = express();
@@ -44,7 +44,7 @@ app.use('/api', indexRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/security', securityRouter);
 app.use('/api/expenses', expensesRouter);
-app.use('/api/categories', catigoriesRouter);
+app.use('/api/categories', categoriesRouter);
 
 // Use the error handling middleware
 app.use(notFoundHandler);

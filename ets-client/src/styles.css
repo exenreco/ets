@@ -1,8 +1,228 @@
-/* You can add global styles to this file, and also import other style files */
+/*|=====================================================================================|
+**| Reset CSS                                                                           |
+**| Src: http://meyerweb.com/eric/tools/css/reset/                                      |
+**| Version:  v2.0 | 20110126                                                           |
+**| License: none (public domain)                                                       |
+**|                                                                                     |
+**| CRITICAL: Ignore code in this section, intended to remove styles                    |
+**|           added by browsers!                                                        |
+**|====================================================================================*/
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote,
+pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var, b, u, i, center,dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary, time, mark, audio, video {
+  margin: 0; padding: 0; border: 0; font-size: 100%;font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+  display: block;
+}
+body { line-height: 1; }
+ol, ul { list-style: none; }
+blockquote, q { quotes: none;}
+blockquote:before, blockquote:after,
+q:before, q:after { content: ''; content: none;}
+table { border-collapse: collapse; border-spacing: 0;}
+
+/*|=====================================================================================|
+**|                               END Reset CSS                                         |
+**|====================================================================================*/
+
+
+/*|=====================================================================================|
+**| Global Style Rules                                                                  |
+**|                                                                                     |
+**| CAUTION: Styles in this section set default values for different UI elements,       |
+**|          such as colors, fonts, and layout. These styles are applied globally       |
+**|          take cation with what's being changed here!                                |
+**|====================================================================================*/
+
+:root {
+  /* Global color Variables */
+  --primary-color: #880D1E;
+  --secondary-color: #DD2D4A;
+  --primary-color-shade: #F26A8D;
+  --secondary-color-shade: #F49CBB;
+  --complimentary-color-soft-blue: #CBEEF3;
+  --background-color: #ffffff;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
   margin: 0;
   padding: 0;
   height: 100%;
+  background: var(--background-color, #ffffff);
 }
 
+label {
+  margin: 0;
+  display: block;
+  color:#555555;
+  width: calc(100% - 24px);
+}
+/* DEFAULT: Inputs, Buttons, Text-areas and Select elements
+**======================================================================================*/
+input, textarea, select, button, ._button {
+  padding: 12px;
+  box-sizing: 0;
+  border-width: 1px;
+  border-radius: 4px;
+  border-style: solid;
+  width: calc(100% - 26px);
+  margin: 4px auto 20px auto;
+  border-color: var(--complimentary-color-soft-blue, #CBEEF3);
+}
+input::placeholder, textarea::placeholder, select {
+  font-style: italic;
+}
+input[type="submit"], input[type="button"], .__button {
+  width: 100%;
+  display: block;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  background-color: #333;
+  transition: all 0.3s ease-in-out;
+}
+input[type="submit"]:hover, input[type="button"]:hover, .__button:hover {
+  background-color: #555;
+  transition: all 0.3s ease-in-out;
+}
+
+/*|=====================================================================================|
+**|                               END Global CSS                                        |
+**|====================================================================================*/
+
+
+
+/*|=====================================================================================|
+**| REUSEABLE: UI Style Rules                                                                      |
+**|                                                                                     |
+**| CAUTION:                                                                            |
+**|====================================================================================*/
+
+/* UI Buttons Options: __button.[primary|secondary]
+**======================================================================================*/
+.__button.primary {
+  background-color: var(--secondary-color, #DD2D4A);
+}
+.__button.primary:hover{
+  background-color: var(--primary-color, #880D1E);
+}
+.__button.secondary {
+  background-color: var(--primary-color-shade, #F26A8D);
+}
+.__button.secondary:hover{
+  background-color: var(--primary-color, #880D1E);
+}
+
+/* UI Page Options: __page.[dashboard|none-auth]
+**======================================================================================*/
+.__page {
+  margin: auto;
+  padding: 12px;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  position: relative;
+  flex-direction: column;
+  width: calc(100% - 24px);
+  height: calc(100% - 24px);
+  max-height: calc(100% - 24px);
+  min-height: calc(100% - 24px);
+  max-width: calc(1480px - 24px);
+  min-width: calc(20px - 24px);
+  background-color: rgba(255, 255, 255, 0.25);
+}
+.__page.none-auth {
+  top: 50%;
+  left: 50%;
+  padding: 0;
+  position: absolute;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  width: calc(100%);
+  height: calc(100%);
+  max-height: calc(100%);
+  min-height: calc(100%);
+  max-width: calc(1480px);
+  min-width: calc(20px);
+  transform: translate(-50%, -50%);
+}
+.__page.dashboard {
+  background-color: rgba(255, 255, 255, 0.75);
+}
+
+
+.__grid {
+  height: auto;
+  margin: auto;
+  padding: 12px;
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  position: relative;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+  width: calc(100% - 24px);
+}
+.__grid.columns {
+  gap: 12px;
+  margin: auto;
+  flex-direction: row;
+}
+.__grid.columns > * {
+  width: auto;
+  height: auto;
+  margin: auto;
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  justify-items: center;
+  flex-direction: column;
+  justify-content: center;
+}
+.__grid.rows {
+  margin: auto;
+  flex-direction: column;
+}
+
+/* Template: None Authenticated Pages custom styles rules
+**======================================================================================*/
+.__page.none-auth .__grid.columns {
+  gap: 0;
+  height: 100%;
+  padding: 0;
+  min-height: 100%;
+  max-height: 100%;
+  width: calc(100%);
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+.__page.none-auth .__grid.columns > .__gutter,
+.__page.none-auth .__grid.columns > .__content {
+  margin: auto;
+  display: flex;
+  padding: 12px;
+  align-items: center;
+  justify-items: start;
+  flex-direction: column;
+  justify-content: center;
+  height: calc(100% - 24px);
+}
+.__page.none-auth .__grid.columns > .__gutter {
+  width: 460px;
+  border-left: 2px solid var(--primary-color-shade, #F26A8D);
+}
+.__page.none-auth .__grid.columns > .__content {
+  width: calc(100% - 510px);
+}
