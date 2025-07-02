@@ -9,13 +9,18 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
     <div class="__page none-auth signin">
       <div class="__grid columns">
         <article class="__content">
+
+          <h1 class="__article_title" style="color: red;">
+            UNTIL authService use:&nbsp;
+            <a routerLink="/dashboard/overview">Dashboard</a><br><br>
+          </h1>
+
           <div class="__image_container landscape" style="background:#faf0e1;">
             <div
               class="__image_container portrait"
               style="background-image: url('/images/signin-screen.png');"
             ></div>
           </div>
-          <a routerLink="/dashboard/overview">Dashboard</a><br><br>
           <h2 class="__article_title">Welcome to Athena's Expense Tracking System</h2>
           <p class="__article_text">
             Step into smarter money management. Log in to access your personalized
@@ -50,11 +55,13 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
 
             <div class="__form_group">
               <span class="__article_text center sm-line-height">
-                Forget your <a href="#">password</a> or <a href="#">username</a>?
+                Forget your
+                <a routerLink="forgotten-password">password</a> or
+                <a routerLink="forgotten-username">username</a>?
               </span>
               <br>
               <span class="__article_text center sm-line-height">
-                Not yet a member? <a href="#">Register</a>
+                Not yet a member? <a routerLink="registration">Register</a>
               </span>
             </div>
 

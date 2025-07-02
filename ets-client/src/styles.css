@@ -347,3 +347,46 @@ a:hover {
   justify-content: center;
   width: calc(100% - 24px);
 }
+
+
+/* LINKS: */
+.__article_link {
+  gap: 2px;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.__article_link.__has_icon {
+  gap: 4px;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  flex-direction: row;
+  justify-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  text-indent: 0 !important;
+}
+.__article_link.__has_icon .__icon,
+.__article_link.__has_icon .__title {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex: 0 0 auto;
+  text-align: left;
+  position: relative;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
+.__article_link.__has_icon .__icon {
+  width: auto;
+}
+.__article_link.__has_icon .__title {
+  width: auto;
+}

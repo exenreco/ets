@@ -6,6 +6,9 @@ import { GlobalPagesComponent } from './layouts/global-pages/global-pages.compon
 import { SigninComponent } from './security/signin/signin.component';
 import { AddExpenseComponent } from './add-expense/add-expense.component';
 import { OverviewComponent } from './overview/overview.component';
+import { ForgottenPasswordComponent } from './security/forgotten-password/forgotten-password.component';
+import { ForgottenUsernameComponent } from './security/forgotten-username/forgotten-username.component';
+import { RegistrationComponent } from './security/registration/registration.component';
 
 
 
@@ -20,11 +23,12 @@ import { OverviewComponent } from './overview/overview.component';
  *
  * @module GlobalPagesRoutes
  */
-export const globalPagesRoutes: Routes = [
+export const securityRoutes: Routes = [
   { path: '', component: SigninComponent },
-  //{ path: 'registration', component: HomeComponent },
-  //{ path: 'forgotten-username', component: HomeComponent },
-  //{ path: 'forgotten-password', component: HomeComponent },
+  { path: 'signin', component: SigninComponent },
+  { path: 'registration', component: RegistrationComponent},
+  { path: 'forgotten-password', component: ForgottenPasswordComponent },
+  { path: 'forgotten-username', component: ForgottenUsernameComponent },
 ];
 
 export const dashboardPagesRoutes: Routes = [
@@ -41,7 +45,7 @@ export const routes: Routes = [
   {
     path: '',
     component: GlobalPagesComponent,
-    children: globalPagesRoutes
+    children: securityRoutes
   },
   {
     path: 'dashboard',
