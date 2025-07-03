@@ -1,6 +1,7 @@
 import { filter } from 'rxjs/operators';
 import { Title } from '@angular/platform-browser';
 import { Component, OnInit } from '@angular/core';
+import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from '../../security/auth.service';
 import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from '@angular/router';
 
@@ -641,7 +642,9 @@ export class DashboardComponent implements OnInit {
 
     private authService: AuthService,
 
-    private activatedRoute: ActivatedRoute
+    private cookieService: CookieService,
+
+    private activatedRoute: ActivatedRoute,
 
   ) {}
 
@@ -699,6 +702,12 @@ export class DashboardComponent implements OnInit {
   onLogout(): void {
 
     this.authService.logout();
+
+    // Remove all session cookie manual incase logout fails
+    this.cookieService.delete('sessionUser');
+    this.cookieService.delete('sessionUserId');
+    this.cookieService.delete('sessionUserName');
+    this.cookieService.deleteAll();
 
   }
 }

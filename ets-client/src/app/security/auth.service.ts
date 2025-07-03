@@ -86,10 +86,10 @@ export class AuthService {
   logout(): void {
 
     // Remove all session cookie
-    this.cookieService.delete('sessionUser', '/');
-    this.cookieService.delete('sessionUserId', '/');
-    this.cookieService.delete('sessionUserName', '/');
-    this.cookieService.deleteAll('/');
+    this.cookieService.delete('sessionUser');
+    this.cookieService.delete('sessionUserId');
+    this.cookieService.delete('sessionUserName');
+    this.cookieService.deleteAll();
 
     // Redirect to sign-in page
     this.router.navigate(['signin']);
