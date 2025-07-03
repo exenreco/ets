@@ -16,11 +16,7 @@ const { notFoundHandler, errorHandler } = require('./utils/error-handler');
 
 // Importing the index router
 const
-<<<<<<< HEAD
 //mailRouter = require('./routes/mail/index.cjs'),
-=======
-testRouter = require('./routes/test'),
->>>>>>> 91870680d9ed9fe3838563699f3c3a0a6b1c562d
 indexRouter = require('./routes/index'),
 usersRouter = require('./routes/users'),
 securityRouter = require('./routes/security'),
@@ -48,7 +44,6 @@ app.use(cookieParser());
 
 // Routing configuration
 app.use('/api', indexRouter);
-app.use('/api', testRouter);
 app.use('/api/users', usersRouter);
 //app.use('/api/mail', mailRouter);
 app.use('/api/security', securityRouter);
