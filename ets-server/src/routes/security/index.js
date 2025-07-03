@@ -1,9 +1,15 @@
 'use strict';
 
-const
+const // Requirements
+
     express = require('express'),
+
     router = express.Router(),
-    { mongo } = require('../../utils/mongo');
+
+    Users = require('../../models/user'),
+
+    createError = require('http-errors')
+;
 
 
 router.get('/', async (req, res, next) => {

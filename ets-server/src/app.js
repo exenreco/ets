@@ -17,18 +17,24 @@ const
 
   { notFoundHandler, errorHandler } = require('./utils/error-handler')
   
-  db = require('./utils/config')
+  db = require('./utils/mongoose')
 ;
 
 
 // Importing the index router
 const
-//mailRouter = require('./routes/mail/index.cjs'),
-indexRouter = require('./routes/index'),
-usersRouter = require('./routes/users'),
-securityRouter = require('./routes/security'),
-expensesRouter = require('./routes/expenses'),
-categoriesRouter = require('./routes/categories');
+  //mailRouter = require('./routes/mail/index.cjs'),
+
+  indexRouter = require('./routes/index'),
+
+  usersRouter = require('./routes/users'),
+
+  securityRouter = require('./routes/security'),
+
+  expensesRouter = require('./routes/expenses'),
+
+  categoriesRouter = require('./routes/categories')
+;
 
 
 // Variable declaration for the express app

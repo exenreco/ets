@@ -1,45 +1,84 @@
 'use strict';
 
-const
+const // Requirements
+
     express = require('express'),
+
     router = express.Router(),
-    { mongo } = require('../../utils/mongo'),
-    createError = require('http-errors');
+
+    Expenses = require('../../models/expense'),
+
+    createError = require('http-errors')
+;
 
 
 // POST endpoint to create a new expense
-router.post('/', async (req, res, next) => {
+router.post('/add-expense', async (req, res, next) => {
     try {
-        const expense = req.body;
+        const { userId, categoryId, amount, description, date } = req.body;
         
         // Validate required fields
-        if (!expense.userId || !expense.categoryId || !expense.amount || !expense.description || !expense.date)
-        return next(createError(400, "Missing required fields: userId, categoryId, amount, description, date"));
-        
+        if (!userId || !categoryId || !amount || !description || !date)return next(createError(
+            400, 
+            "Missing required fields: userId, categoryId, amount, description, date"
+        ));
 
         // Parse amount to float
-        const amount = parseFloat(expense.amount);
-        if (isNaN(amount)) return next(createError(400, "Amount must be a valid number"));
+        const amountValue = parseFloat(amount);
+        if (isNaN(amountValue)) return next(createError(
+            400,
+            "Amount must be a valid number."
+        ));
 
-        // Prepare new expense document
-        const newExpense = {
-            userId: expense.userId,
-            categoryId: expense.categoryId,
-            amount: amount.toFixed(2), // Store as fixed-decimal string
-            description: expense.description,
-            date: new Date(expense.date), // Ensure proper Date format
-            dateCreated: new Date(), // Current timestamp for creation
-            dateModified: new Date() // Current timestamp for modification
-        };
+        // Parse userId to int
+        const userIdValue = parseInt(userId, 10);
+        if (isNaN(userIdValue)) return next(createError(
+            400,
+            "An invalid userId was given."
+        ));
 
-        // Insert into MongoDB
-        await mongo(async db => {
-            const result = await db.collection('expenses').insertOne(newExpense);
-            newExpense._id = result.insertedId; // Add generated ObjectID to response
-            res.status(201).json(newExpense);
+        // Parse userId to int
+        const categoryIdValue = parseInt(categoryId, 10);
+        if (isNaN(categoryIdValue)) return next(createError(
+            400,
+            "An invalid category id was given."
+        ));
+
+        // string description
+        if ( typeof description !== 'string') return next(createError(
+            400,
+            "An invalid description was given."
+        ));
+
+        // Create new expense using Mongoose model
+        const newExpense = new Expenses({
+            date:           new Date(date),
+            userId:         userIdValue,
+            amount:         amountValue,
+            categoryId:     categoryIdValue,
+            description:    description
         });
 
+        // Save to database using Mongoose
+        const savedExpense = await newExpense.save();
+        
+        // Send response with created expense
+        res.status(201).json(savedExpense);
+
     } catch (err) {
+
+        // Handle Mongoose validation errors
+        if (err.name === 'ValidationError') return next(createError(
+            400,
+            err.message
+        ));
+
+        // Handle duplicate key errors
+        if (err.code === 11000) return next(createError(
+            400,
+            'Duplicate expense detected'
+        ));
+
         next(createError(500, "Internal server error", { detail: err.message }));
     }
 });

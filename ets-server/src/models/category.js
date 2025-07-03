@@ -20,6 +20,9 @@ const
 
       dateModified: { type: Date, default: Date.now }
 
+    },
+    {
+      versionKey: false
     })
   ;
 

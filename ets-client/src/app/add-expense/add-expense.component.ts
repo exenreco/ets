@@ -179,7 +179,7 @@ export class AddExpenseComponent {
     // Clear previous notifications
     this.notification = null;
 
-    this.http.post(`${environment.apiBaseUrl}/api/expenses`, expenseData).subscribe({
+    this.http.post(`${environment.apiBaseUrl}/api/expenses/add-expense`, expenseData).subscribe({
       next: (res) => this.onSuccess(),
       error: (err) => this.onError(err)
     });

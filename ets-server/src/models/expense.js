@@ -18,6 +18,9 @@ const
         dateCreated: { type: Date,  default: Date.now },
 
         dateModified: {  type: Date, default: Date.now  }
+    },
+    {
+      versionKey: false
     })
 ;
 

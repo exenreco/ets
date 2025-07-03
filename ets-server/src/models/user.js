@@ -1,44 +1,48 @@
 const 
 
-mongoose = require('mongoose'),
+  mongoose = require('mongoose'),
 
-{ Schema } = mongoose,
+  { Schema } = mongoose,
 
-bcrypt = require('bcrypt'),
+  bcrypt = require('bcryptjs'),
 
-userSchema = new Schema({
+  userSchema = new Schema({
 
-  userId: { type: Number, required: true, unique: true, index: true },
+    userId: { type: Number, required: true, unique: true, index: true },
 
-  lastName: { type: String, required: true, trim: true, maxlength: 50 },
+    lastName: { type: String, required: true, trim: true, maxlength: 50 },
 
-  firstName: { type: String, required: true, trim: true, maxlength: 50 },
+    firstName: { type: String, required: true, trim: true, maxlength: 50 },
 
-  password: { type: String, required: true, minlength: 8 },
+    password: { type: String, required: true, minlength: 8 },
 
-  dateCreated: { type: Date, default: Date.now },
+    dateCreated: { type: Date, default: Date.now },
 
-  dateModified: { type: Date, default: Date.now },
+    dateModified: { type: Date, default: Date.now },
 
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-    minlength: 3,
-    maxlength: 30,
-    match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores']
+    username: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+      minlength: 3,
+      maxlength: 30,
+      match: [/^[a-zA-Z0-9_]+$/, 'Username can only contain letters, numbers and underscores']
+    },
+
+    email: { 
+      type: String, 
+      required: true, 
+      unique: true, 
+      lowercase: true, 
+      trim: true,
+      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+    }
   },
-
-  email: { 
-    type: String, 
-    required: true, 
-    unique: true, 
-    lowercase: true, 
-    trim: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
-  }
-});
+  {
+    versionKey: false
+  })
+;
 
 // Hash password before saving
 userSchema.pre('save', async function(next) {
