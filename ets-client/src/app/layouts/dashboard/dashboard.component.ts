@@ -1,7 +1,18 @@
-import { Subscription } from 'rxjs';
-import { filter, map } from 'rxjs/operators';
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data } from '@angular/router';
+import { filter } from 'rxjs/operators';
+import { Title } from '@angular/platform-browser';
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../security/auth.service';
+import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from '@angular/router';
+
+/**
+ * DashboardComponent
+ *
+ * Handles all authenticated pages
+ *
+ * @component Dashboard
+ *
+ * @dev Team Athene: Exenreco Bell, Sara Gorge
+ */
 
 @Component({
   selector: 'app-dashboard',
@@ -16,6 +27,12 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
           <p class="__tagline">Expense Tracking System</p>
         </section>
         <ul class="__menu_nav">
+          <li class="__nav_item">
+            <a class="__link __toggle" style="font-weight:bolder;" routerLink="/dashboard/overview">
+              <span class="__icon"><i class="fa-solid fa-chart-simple"></i></span>
+              <span class="__title">Overview</span>
+            </a>
+          </li>
           <li class="__nav_item" [class.active]="submenuStates['expenses']">
             <span class="__toggle" (click)="toggleSubmenu('expenses')">
               <span class="__icon"><i class="fa-solid fa-sack-dollar"></i></span>
@@ -59,12 +76,12 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
           <li class="__nav_item">
             <a class="__link __toggle" href="#" style="font-weight:bolder;">
               <span class="__icon"><i class="fa-solid fa-clipboard-question"></i></span>
-              <span class="__title">Frequently Asked</span>
+              <span class="__title">Question & Answers</span>
             </a>
           </li>
         </ul>
         <footer class="__menu_footer">
-          <a class="__link" href="#" title="Logout">
+          <a class="__link" title="Logout" (click)="onLogout()">
             <span class="__icon"><i class="fa-solid fa-right-from-bracket"></i></span>
             <span class="__title">Logout</span>
           </a>
@@ -85,14 +102,14 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
             <div class="nav-line"></div>
           </span>
 
-          <div class="__page_title">{{ title }}</div>
+          <div class="__page_title">{{ pageTitle }}</div>
 
           <div class="__profile">
             <div class="__account_menu_toggle" [class.active]="submenuStates['account']">
               <span
                 (click)="toggleSubmenu('account')"
                 class="__initial"
-              >U</span>
+              >{{ userInitial }}</span>
               <span
                 (click)="toggleSubmenu('account')"
                 class="__indicator"
@@ -112,7 +129,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
                 </a>
               </li>
               <li class="__menu_item">
-                <a class="__link" href="#" title="Logout">
+                <a class="__link" title="Logout" (click)="onLogout()">
                   <span class="__icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                   <span class="__title">Logout</span>
                 </a>
@@ -202,6 +219,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
 
       .__dashboard .__dashboard_menu .__menu_nav {
         padding: 0;
+        margin-top: 2em;
         font-weight: bolder;
       }
         .__dashboard .__dashboard_menu .__menu_nav .__nav_item {
@@ -601,11 +619,11 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd, Data }
     }
   `
 })
-export class DashboardComponent implements OnInit, OnDestroy {
+export class DashboardComponent implements OnInit {
 
-  title = 'Dashboard';
+  userInitial: string = 'U';
 
-  private sub!: Subscription;
+  pageTitle: string = 'Dashboard';
 
   // Track menu, submenu and account states individually
   submenuStates: { [key: string]: boolean } = {
@@ -615,38 +633,72 @@ export class DashboardComponent implements OnInit, OnDestroy {
     categories: true
   };
 
-  constructor( private router: Router, private route: ActivatedRoute) {
-  }
+  constructor(
+
+    private router: Router,
+
+    private titleService: Title,
+
+    private authService: AuthService,
+
+    private activatedRoute: ActivatedRoute
+
+  ) {}
 
   ngOnInit(): void {
 
-    this.sub = this.router.events.pipe(
-      filter(e => e instanceof NavigationEnd),
+    this.updateTitle(); // set initial title
 
-      map(() => {
-        let child = this.route.firstChild;
-        while (child?.firstChild) {
-          child = child.firstChild;
-        }
-        return child;
-      }),
+    this.updateUserInitial(); // update initial
 
-      filter(r => !!r),
+    // Title service sub subscription: update on route change
+    this.router.events.pipe(
 
-      map(r => {
-        const data = r!.snapshot.data;
-        return (data['title'] as string) || 'Dashboard';
-      })
+      filter(event => event instanceof NavigationEnd)
 
-    ).subscribe(title => this.title = title);
+    ).subscribe(() =>{ this.updateTitle(); });
+
   }
 
-  ngOnDestroy(): void {
-    this.sub?.unsubscribe();
+  // Update Dashboard title based on the activated routed
+  private updateTitle(): void {
+
+    let route = this.activatedRoute;
+
+    while (route.firstChild) route = route.firstChild;
+
+    route.data.subscribe(data => {
+
+      this.pageTitle = data['title'] || 'Dashboard'; // update component
+
+      this.titleService.setTitle(`${this.pageTitle} | AETs`); // update browser tab
+    });
+
+  }
+
+  // update the user profile initial
+  updateUserInitial(): void {
+
+    if( typeof this.authService.getUserName() === 'string' ) {
+
+      const username = this.authService.getUserName();
+
+      this.userInitial = username?.[0]?.toUpperCase() ?? 'U';
+
+    }
   }
 
   // Toggle specific submenu
   toggleSubmenu(menuKey: string): void {
+
     this.submenuStates[menuKey] = !this.submenuStates[menuKey];
+
+  }
+
+  // Logout user account
+  onLogout(): void {
+
+    this.authService.logout();
+
   }
 }

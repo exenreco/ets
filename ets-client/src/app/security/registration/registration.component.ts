@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { NgFor, NgIf } from '@angular/common';
+import { AuthService } from '../auth.service';
+import { Component, OnInit } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
+import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
+
 
 @Component({
   selector: 'app-registration',
   standalone: true,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterLink],
   template: `
     <div class="__page none-auth registration">
       <div class="__grid columns">
@@ -55,6 +59,17 @@ import { Router, RouterLink, RouterOutlet } from '@angular/router';
   `,
   styles: ``
 })
-export class RegistrationComponent {
+export class RegistrationComponent implements OnInit {
 
+  constructor(
+      private router: Router,
+      private fb: FormBuilder,
+      private authService: AuthService
+    ) {}
+
+  ngOnInit(): void {
+    // Redirect to dashboard if already logged in
+    if (this.authService.isAuthenticated())
+      this.router.navigate(['/dashboard']);
+  }
 }

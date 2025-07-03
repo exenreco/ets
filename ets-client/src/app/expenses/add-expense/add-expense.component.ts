@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { CategoryService } from '../../CategoriesService';
-import { environment } from '../../environments/environment';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { CategoryService } from '../../categories/categories.service';
+import { environment } from '../../../environments/environment';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, NgFor } from '@angular/common';
+import { AuthService } from '../../security/auth.service';
 
 @Component({
   selector: 'app-add-expense',
@@ -119,7 +120,7 @@ import { NgIf, NgFor } from '@angular/common';
 })
 export class AddExpenseComponent {
 
-  userID = 1000; // will be updated after authService
+  userID: any = this.authService.getUserId();
 
   categories: any[] = [];
 
@@ -133,9 +134,15 @@ export class AddExpenseComponent {
   });
 
   constructor(
-    private http: HttpClient,
+
     private fb: FormBuilder,
+
+    private http: HttpClient,
+
+    private authService: AuthService,
+
     private categoryService: CategoryService
+
   ) {}
 
   get selectedCategory(): string {
@@ -144,7 +151,6 @@ export class AddExpenseComponent {
 
   ngOnInit() {
     this.loadCategories();
-    console.log(this.categories)
   }
 
   onSubmit() {
@@ -205,7 +211,7 @@ export class AddExpenseComponent {
   }
 
   loadCategories() {
-    this.categoryService.getUserCategories(this.userID).subscribe({
+    this.categoryService.getCategoriesByUserId().subscribe({
       next: (data) => this.categories = data,
       error: (err) => {
         console.error('Failed to load categories', err);
