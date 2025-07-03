@@ -9,7 +9,7 @@
 const request = require('supertest');
 const express = require('express');
 const app = require('../src/app');
-const { errorHandler } = require('../src/error-handler');
+const { errorHandler } = require('../src/utils/error-handler');
 
 // Test cases
 describe('app.js', () => {
