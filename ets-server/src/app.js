@@ -8,10 +8,17 @@
 'uses strict';
 
 // require statements
-const express = require('express');
-const cookieParser = require('cookie-parser');
-const logger = require('morgan');
-const { notFoundHandler, errorHandler } = require('./utils/error-handler');
+const
+  express = require('express'),
+
+  cookieParser = require('cookie-parser'),
+
+  logger = require('morgan'),
+
+  { notFoundHandler, errorHandler } = require('./utils/error-handler')
+  
+  db = require('./utils/config')
+;
 
 
 // Importing the index router
@@ -23,7 +30,6 @@ securityRouter = require('./routes/security'),
 expensesRouter = require('./routes/expenses'),
 categoriesRouter = require('./routes/categories');
 
-const db = require('./utils/config');
 
 // Variable declaration for the express app
 let app = express();
