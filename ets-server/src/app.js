@@ -16,12 +16,15 @@ const { notFoundHandler, errorHandler } = require('./utils/error-handler');
 
 // Importing the index router
 const
+testRouter = require('./routes/test'),
 indexRouter = require('./routes/index'),
 usersRouter = require('./routes/users'),
 mailingRouter = require('./routes/mail'),
 securityRouter = require('./routes/security'),
 expensesRouter = require('./routes/expenses'),
 categoriesRouter = require('./routes/categories');
+
+const db = require('./utils/config');
 
 // Variable declaration for the express app
 let app = express();
@@ -42,6 +45,7 @@ app.use(cookieParser());
 
 // Routing configuration
 app.use('/api', indexRouter);
+app.use('/api', testRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/mail', mailingRouter);
 app.use('/api/security', securityRouter);
