@@ -23,7 +23,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
           </h2>
           <p class="__article_text">
             Place holder text
-            <a class="__article_link __has_icon" routerLink="/">
+            <a class="return_home __article_link __has_icon" routerLink="signin">
                 <span class="__icon">
                   <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </span>
@@ -71,4 +71,8 @@ export class ForgottenPasswordComponent implements OnInit {
     if (this.authService.isAuthenticated())
       this.router.navigate(['/dashboard']);
   }
+
+  onSubmit(): void {
+  }
+
 }

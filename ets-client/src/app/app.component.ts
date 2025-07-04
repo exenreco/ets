@@ -8,4 +8,6 @@ import { RouterOutlet, RouterLink} from '@angular/router';
   template: `<router-outlet />`,
   styles: ``
 })
-export class AppComponent {}
+export class AppComponent {
+  title: string ="ets-client";
+}

@@ -88,7 +88,7 @@ import { AuthService } from '../../security/auth.service';
   styles: `
     .__form_group {
       align-items: start;
-      justify-items: center
+      justify-items: center;
       justify-content: center;
       margin: auto auto 28px auto;
     }
