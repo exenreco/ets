@@ -16,10 +16,10 @@ const // Requirements
 router.post('/add-expense', async (req, res, next) => {
     try {
         const { userId, categoryId, amount, description, date } = req.body;
-        
+
         // Validate required fields
         if (!userId || !categoryId || !amount || !description || !date)return next(createError(
-            400, 
+            400,
             "Missing required fields: userId, categoryId, amount, description, date"
         ));
 
@@ -61,7 +61,7 @@ router.post('/add-expense', async (req, res, next) => {
 
         // Save to database using Mongoose
         const savedExpense = await newExpense.save();
-        
+
         // Send response with created expense
         res.status(201).json(savedExpense);
 
@@ -81,6 +81,45 @@ router.post('/add-expense', async (req, res, next) => {
 
         next(createError(500, "Internal server error", { detail: err.message }));
     }
+});
+
+router.get('/', async (req, res, next) => {
+  try {
+    const expense = await Expenses.find({});
+    res.send(expense);
+  } catch (err) {
+    console.error('There was a problem retrieving a list of expenses ${err}');
+    next(err);
+  }
+});
+
+router.get('/ToName', async (req, res, next) => {
+  try {
+    const expenses = await Expenses.aggregate([
+      {
+        $lookup: {
+          from: 'categories', // collection name in MongoDB
+          localField: 'categoryId',
+          foreignField: 'categoryId',
+          as: 'category'
+        }
+      },
+      {
+        $unwind: '$category' // flatten the category array
+      },
+      {
+        $project: {
+          amount: 1,
+          description: 1,
+          date: 1,
+          categoryName: '$category.name',
+        }
+      }
+    ]);
+    res.json(expenses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
 });
 
 module.exports = router;

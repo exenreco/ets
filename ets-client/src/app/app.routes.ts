@@ -11,6 +11,7 @@ import { ErrorGlobalComponent } from './layouts/global-pages/error-global/error-
 import { ForgottenPasswordComponent } from './security/forgotten-password/forgotten-password.component';
 import { ForgottenUsernameComponent } from './security/forgotten-username/forgotten-username.component';
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
+import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
 
 
 /**
@@ -48,7 +49,7 @@ export const authenticatedRoutes: Routes = [
   { path: 'add-expense', component: AddExpenseComponent, data: {title:'Add Expense'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
-  //{ path: 'list-expenses', component: },
+  { path: 'expense-list', component: ExpenseListComponent, data: {title: 'Expense List'} },
   { path: '**', redirectTo: '/dashboard/404', pathMatch: 'full' },
 ];
 

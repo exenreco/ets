@@ -41,7 +41,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </span>
             <ul class="__submenu">
               <li class="__submenu_item">
-                <a class="__link" href="#">All Expenses</a>
+                <a class="__link" routerLink="/dashboard/expense-list">All Expenses</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
