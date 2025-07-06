@@ -16,6 +16,6 @@ export class ExpensesService {
   }
 
   getExpensesWithCategory() {
-    return this.http.get<Expenses[]>(`${environment.apiBaseUrl}/api/expenses/ToName`);
+    return this.http.get<Expenses[]>(`${environment.apiBaseUrl}/api/expenses/catToName`);
   }
 }

@@ -83,6 +83,7 @@ router.post('/add-expense', async (req, res, next) => {
     }
 });
 
+// GET endpoint to retrieve all expenses from the expenses collection
 router.get('/', async (req, res, next) => {
   try {
     const expense = await Expenses.find({});
@@ -93,7 +94,8 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/ToName', async (req, res, next) => {
+// GET endpoint to retrieve all expenses with category names
+router.get('/catToName', async (req, res, next) => {
   try {
     const expenses = await Expenses.aggregate([
       {

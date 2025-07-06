@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Expenses } from '../expenses'; // Adjust the import path as necessary
-import { ExpensesService } from '../expenses.service'; // Adjust the import path as necessary
+import { Expenses } from '../expenses';
+import { ExpensesService } from '../expenses.service';
 
 @Component({
   selector: 'app-expense-list',
@@ -11,6 +11,7 @@ import { ExpensesService } from '../expenses.service'; // Adjust the import path
   template: `
     <div class="__page expense-page">
 
+      <!-- displays a table with the data retrieved from the database -->
       @if (expenses && expenses.length > 0) {
         <table class="expense-page__table">
           <thead class="expense-page__table-head">
@@ -36,6 +37,7 @@ import { ExpensesService } from '../expenses.service'; // Adjust the import path
             }
           </tbody>
         </table>
+      <!-- Displays a message if there is no data to display -->
       } @else {
         <p class="expense-page__no-expenses">No expenses found.</p>
       }
@@ -67,12 +69,14 @@ export class ExpenseListComponent {
   expenses: Expenses[] = [];
   errorMessage: string = '';
 
+  // Fetch expenses with category information to display the categoryId from the expenses collection as the corresponding category name from the category collection in the table
   ngOnInit() {
     this.expensesService.getExpensesWithCategory().subscribe(data => {
       this.expenses = data;
     });
   }
 
+  // Constructor to fetch expenses from the service in order to display them in the table
   constructor(private expensesService: ExpensesService) {
     this.expensesService.getExpenses().subscribe({
       next: (gardens: Expenses[]) => {
