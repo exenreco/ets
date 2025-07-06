@@ -16,7 +16,8 @@ describe('ExpenseListComponent', () => {
     {
       _id: '1',
       userId: 1,
-      categoryId: 'Food',
+      categoryName: 'Food',
+      categoryId: 3,
       amount: 50,
       description: 'Lunch at restaurant',
       date: '2023-10-01',
@@ -26,7 +27,8 @@ describe('ExpenseListComponent', () => {
     {
       _id: '2',
       userId: 1,
-      categoryId: 'Transport',
+      categoryName: 'Transport',
+      categoryId: 4,
       amount: 20,
       description: 'Bus ticket',
       date: '2023-10-02',
@@ -36,7 +38,8 @@ describe('ExpenseListComponent', () => {
   ];
 
   beforeEach(waitForAsync(() => {
-    mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getExpenses']);
+    mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getExpenses', 'getExpensesWithCategory']);
+    mockExpensesService.getExpensesWithCategory.and.returnValue(of(mockExpenses));
 
     TestBed.configureTestingModule({
       imports: [ExpenseListComponent],
@@ -58,19 +61,18 @@ describe('ExpenseListComponent', () => {
   it('should display a table of expenses when expenses exist', () => {
     fixture.detectChanges();
     const rows = fixture.debugElement.queryAll(By.css('.expense-page__table-row'));
-    // 1 header row + 2 data rows
-    expect(rows.length).toBe(1 + mockExpenses.length);
-    const firstCell = fixture.debugElement.query(By.css('.expense-page__table-cell'));
-    expect(firstCell.nativeElement.textContent).toContain('Food');
+    const firstDataRow = rows[1]; // row[0] is the header
+    const cells = firstDataRow.queryAll(By.css('.expense-page__table-cell'));
+    expect(cells[1].nativeElement.textContent).toContain('Food');
   });
 
   it('should display "No expenses found." when the expenses array is empty', () => {
-    mockExpensesService.getExpenses.and.returnValue(of([]));
+    mockExpensesService.getExpensesWithCategory.and.returnValue(of([]));
     fixture = TestBed.createComponent(ExpenseListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
     const msg = fixture.debugElement.query(By.css('.expense-page__no-expenses'));
-    expect(msg.nativeElement.textContent).toContain('No expenses found.');
+    expect(msg?.nativeElement.textContent).toContain('No expenses found.');
   });
 
   // Optional: error handling (not requested, but useful)

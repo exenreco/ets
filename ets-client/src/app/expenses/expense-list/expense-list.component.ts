@@ -79,10 +79,11 @@ export class ExpenseListComponent {
   // Constructor to fetch expenses from the service in order to display them in the table
   constructor(private expensesService: ExpensesService) {
     this.expensesService.getExpenses().subscribe({
-      next: (gardens: Expenses[]) => {
-        this.expenses = gardens;
+      next: (expenses: Expenses[]) => {
+        this.expenses = expenses;
         console.log('Expenses: ${JSON.stringify(this.expenses)}`);');
       },
+
       error: (error: any) => {
         console.error('Error fetching expenses: ${err}');
         this.errorMessage = error.message;

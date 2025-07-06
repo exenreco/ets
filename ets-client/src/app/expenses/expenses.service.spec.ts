@@ -30,7 +30,8 @@ describe('ExpensesService', () => {
       {
         _id: '1',
         userId: 1,
-        categoryId: 'Food',
+        categoryId: 3,
+        categoryName: 'Food',
         amount: 10,
         description: 'Lunch',
         date: '2025-07-01',

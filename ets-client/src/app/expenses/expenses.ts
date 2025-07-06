@@ -1,8 +1,8 @@
 export interface Expenses {
-categoryName: any;
+  categoryName: string;
   _id: string;
   userId: number;
-  categoryId: string;
+  categoryId: number;
   amount: number;
   description?: string;
   date?: string;
