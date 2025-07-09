@@ -3,7 +3,7 @@ import { authGuard } from './security/auth.guard';
 import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './layouts/dashboard/overview/overview.component';
 import { SigninComponent } from './security/signin/signin.component';
-import { AddExpenseComponent } from './expenses/add-expense/add-expense.component';
+import { ExpenseAddComponent } from './expenses/expense-add/expense-add.component';
 import { DashboardComponent } from './layouts/dashboard/dashboard.component';
 import { GlobalPagesComponent } from './layouts/global-pages/global-pages.component';
 import { RegistrationComponent } from './security/registration/registration.component';
@@ -12,6 +12,7 @@ import { ForgottenPasswordComponent } from './security/forgotten-password/forgot
 import { ForgottenUsernameComponent } from './security/forgotten-username/forgotten-username.component';
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
 import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
+import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update.component';
 
 
 /**
@@ -46,7 +47,8 @@ export const authenticatedRoutes: Routes = [
   { path: '', redirectTo: '/dashboard/overview', pathMatch: 'full' },
   { path: '404', component: ErrorDashboardComponent, data: {title:'Error: 404'} },
   { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
-  { path: 'add-expense', component: AddExpenseComponent, data: {title:'Add Expense'} },
+  { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Add Expense'} },
+  { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update Expense'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
   { path: 'expense-list', component: ExpenseListComponent, data: {title: 'Expense List'} },

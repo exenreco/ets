@@ -47,7 +47,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Update Expense</a>
+                <a class="__link" routerLink="/dashboard/update-expense">Update Expense</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" href="#">Delete Expense</a>
@@ -82,10 +82,10 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
           </li>
         </ul>
         <footer class="__menu_footer">
-          <a class="__link" title="Logout" (click)="onLogout()">
+          <button class="__button tertiary" title="Logout" type="button" (click)="onLogout()">
             <span class="__icon"><i class="fa-solid fa-right-from-bracket"></i></span>
             <span class="__title">Logout</span>
-          </a>
+          </button>
         </footer>
       </nav>
 
@@ -297,14 +297,23 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
         }
 
       .__dashboard .__dashboard_menu .__menu_footer {
-        bottom: 0px;
         z-index: 1;
         width: 20em;
+        bottom: 0px;
+        display: flex;
+        flex: 0 0 auto;
+        margin-bottom: 0;
         text-align: center;
         position: absolute;
+        align-items: center;
+        justify-items: center;
+        justify-content: center;
       }
-      .__dashboard .__dashboard_menu .__menu_footer .__link {
+      .__dashboard .__dashboard_menu .__menu_footer .__link,
+      .__dashboard .__dashboard_menu .__menu_footer .__button {
         gap: 12px;
+        width: 95%;
+        margin: 5px;
         display: flex;
         flex: 0 0 auto;
         flex-direction: row;
@@ -320,7 +329,8 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
       .__dashboard .__dashboard_menu .__menu_footer .__link,
       .__dashboard .__dashboard_menu .__menu_footer .__link:link,
       .__dashboard .__dashboard_menu .__menu_footer .__link:active,
-      .__dashboard .__dashboard_menu .__menu_footer .__link:visited {
+      .__dashboard .__dashboard_menu .__menu_footer .__link:visited,
+      .__dashboard .__dashboard_menu .__menu_footer .__button {
         color: #ffffff;
         font-weight: bolder;
         text-decoration: none;
@@ -329,6 +339,10 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
       .__dashboard .__dashboard_menu .__menu_footer a:hover,
       .__dashboard .__dashboard_menu .__menu_footer .__link:hover {
         color: var(--secondary-color, #DD2D4A);
+        transition: all 400ms ease-in-out;
+      }
+      .__dashboard .__dashboard_menu .__menu_footer .__button:hover {
+        color: #ffffff;
         transition: all 400ms ease-in-out;
       }
 
@@ -682,7 +696,7 @@ export class DashboardComponent implements OnInit {
   // update the user profile initial
   updateUserInitial(): void {
 
-    if( typeof this.authService.getUserName() === 'string' ) {
+    if( this.authService.getUserName() ) {
 
       const username = this.authService.getUserName();
 
@@ -700,14 +714,11 @@ export class DashboardComponent implements OnInit {
 
   // Logout user account
   onLogout(): void {
-
-    this.authService.logout();
-
     // Remove all session cookie manual incase logout fails
     this.cookieService.delete('sessionUser');
     this.cookieService.delete('sessionUserId');
     this.cookieService.delete('sessionUserName');
     this.cookieService.deleteAll();
-
+    this.authService.logout();
   }
 }

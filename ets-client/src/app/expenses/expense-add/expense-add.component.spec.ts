@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AddExpenseComponent } from './add-expense.component';
+import { ExpenseAddComponent } from './expense-add.component';
 import { AuthService } from '../../security/auth.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder } from '@angular/forms';
@@ -8,15 +8,15 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { Subject } from 'rxjs';
-import { CategoryService } from '../../categories/categories.service';
+import { CategoriesService } from '../../categories/categories.service';
 
-describe('AddExpenseComponent', () => {
-  let component: AddExpenseComponent;
-  let fixture: ComponentFixture<AddExpenseComponent>;
+describe('ExpenseAddComponent', () => {
+  let component: ExpenseAddComponent;
+  let fixture: ComponentFixture<ExpenseAddComponent>;
   let authService: jasmine.SpyObj<AuthService>;
   let router: jasmine.SpyObj<Router>;
   let routerEvents$: Subject<any>;
-  let categoryService: jasmine.SpyObj<CategoryService>;
+  let categoriesService: jasmine.SpyObj<CategoriesService>;
 
   beforeEach(async () => {
     const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'getUserId']);
@@ -29,11 +29,11 @@ describe('AddExpenseComponent', () => {
 
     const activatedSpy = jasmine.createSpyObj('ActivatedRoute', ['firstChild']);
 
-    const categorySpy = jasmine.createSpyObj('CategoryService', ['getCategoriesByUserId']);
+    const categorySpy = jasmine.createSpyObj('CategoriesService', ['getCategoriesByUserId']);
 
     await TestBed.configureTestingModule({
       imports: [
-        AddExpenseComponent,
+        ExpenseAddComponent,
         ReactiveFormsModule
       ],
       providers: [
@@ -41,7 +41,7 @@ describe('AddExpenseComponent', () => {
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
         { provide: AuthService, useValue: authSpy },
-        { provide: CategoryService, useValue: categorySpy },
+        { provide: CategoriesService, useValue: categorySpy },
         { provide: Router, useValue: routerSpy },
         { provide: ActivatedRoute, useValue: activatedSpy }
       ],
@@ -50,9 +50,9 @@ describe('AddExpenseComponent', () => {
 
     router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
     authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
-    categoryService = TestBed.inject(CategoryService) as jasmine.SpyObj<CategoryService>;
+    categoriesService = TestBed.inject(CategoriesService) as jasmine.SpyObj<CategoriesService>;
 
-    fixture = TestBed.createComponent(AddExpenseComponent);
+    fixture = TestBed.createComponent(ExpenseAddComponent);
     component = fixture.componentInstance;
     authService.isAuthenticated.and.returnValue(false);
   });

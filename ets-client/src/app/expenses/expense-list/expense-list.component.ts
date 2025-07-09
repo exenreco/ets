@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { Expenses } from '../expenses';
-import { ExpensesService } from '../expenses.service';
+import { CommonModule } from '@angular/common';
+import { CategoriesService, Category} from '../../categories/categories.service';
+import { ExpensesService, Expense, ExpenseWithCategoryName } from '../expenses.service';
+import { forkJoin, map, Observable, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-expense-list',
@@ -11,7 +12,6 @@ import { ExpensesService } from '../expenses.service';
   template: `
     <div class="__page expense-page">
 
-      <!-- displays a table with the data retrieved from the database -->
       @if (expenses && expenses.length > 0) {
         <table class="expense-page__table">
           <thead class="expense-page__table-head">
@@ -37,9 +37,13 @@ import { ExpensesService } from '../expenses.service';
             }
           </tbody>
         </table>
-      <!-- Displays a message if there is no data to display -->
       } @else {
-        <p class="expense-page__no-expenses">No expenses found.</p>
+        <div class="__grid rows">
+          <span>
+            There are no Expenses available, try adding some expense!
+            <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
+          </span>
+        </div>
       }
     </div>
   `,
@@ -49,10 +53,12 @@ import { ExpensesService } from '../expenses.service';
       border: 1px solid #C0CCDA;
     }
     .expense-page__table-header {
-      padding: 25px 25px 40px 25px;
+      text-align: left;
       font-weight: bold;
+      padding: 25px 25px 40px 25px;
     }
     .expense-page__table-cell {
+      text-align: left;
       padding: 25px 25px 40px 25px;
       border-top: 1px solid #C0CCDA;
       border-bottom: 1px solid #C0CCDA;
@@ -66,28 +72,20 @@ import { ExpensesService } from '../expenses.service';
   `
 })
 export class ExpenseListComponent {
-  expenses: Expenses[] = [];
+
   errorMessage: string = '';
 
-  // Fetch expenses with category information to display the categoryId from the expenses collection as the corresponding category name from the category collection in the table
+  expenses: ExpenseWithCategoryName[] = [];
+
+  constructor(private expenseService: ExpensesService){}
+
   ngOnInit() {
-    this.expensesService.getExpensesWithCategory().subscribe(data => {
-      this.expenses = data;
-    });
-  }
-
-  // Constructor to fetch expenses from the service in order to display them in the table
-  constructor(private expensesService: ExpensesService) {
-    this.expensesService.getExpenses().subscribe({
-      next: (expenses: Expenses[]) => {
-        this.expenses = expenses;
-        console.log('Expenses: ${JSON.stringify(this.expenses)}`);');
-      },
-
-      error: (error: any) => {
-        console.error('Error fetching expenses: ${err}');
+    this.expenseService.getUserExpensesWithCatName().subscribe({
+      next: (res => this.expenses = res),
+      error: (error) => {
+        console.error(`Error fetching expenses: ${error}`);
         this.errorMessage = error.message;
       }
-    });
+    })
   }
 }

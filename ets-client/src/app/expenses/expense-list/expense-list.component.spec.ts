@@ -1,57 +1,69 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { ExpenseListComponent } from './expense-list.component';
-import { ExpensesService } from '../expenses.service';
-import { of, throwError } from 'rxjs';
-import { Expenses } from '../expenses';
+import { ExpensesService, Expense} from '../expenses.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { of, throwError, Subject } from 'rxjs';
 import { By } from '@angular/platform-browser';
-import { CommonModule } from '@angular/common';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController,  provideHttpClientTesting } from '@angular/common/http/testing';
+import { AuthService } from '../../security/auth.service';
+import { CategoriesService } from '../../categories/categories.service';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 describe('ExpenseListComponent', () => {
   let component: ExpenseListComponent;
   let fixture: ComponentFixture<ExpenseListComponent>;
-  let mockExpensesService: jasmine.SpyObj<ExpensesService>;
+  let expensesService: jasmine.SpyObj<ExpensesService>;
+  let authService: jasmine.SpyObj<AuthService>;
+  let httpMock: HttpTestingController;
+  let router: jasmine.SpyObj<Router>;
+  let routerEvents$: Subject<any>;
+  let categoriesService: jasmine.SpyObj<CategoriesService>;
 
-  const mockExpenses: Expenses[] = [
-    {
-      _id: '1',
-      userId: 1,
-      categoryName: 'Food',
-      categoryId: 3,
-      amount: 50,
-      description: 'Lunch at restaurant',
-      date: '2023-10-01',
-      dateCreated: '2023-10-01T12:00:00Z',
-      dateModified: '2023-10-01T12:00:00Z'
-    },
-    {
-      _id: '2',
-      userId: 1,
-      categoryName: 'Transport',
-      categoryId: 4,
-      amount: 20,
-      description: 'Bus ticket',
-      date: '2023-10-02',
-      dateCreated: '2023-10-02T12:00:00Z',
-      dateModified: '2023-10-02T12:00:00Z'
-    }
-  ];
+  beforeEach(async () => {
+    const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'getUserId']);
 
-  beforeEach(waitForAsync(() => {
-    mockExpensesService = jasmine.createSpyObj('ExpensesService', ['getExpenses', 'getExpensesWithCategory']);
-    mockExpensesService.getExpensesWithCategory.and.returnValue(of(mockExpenses));
+    routerEvents$ = new Subject();
+    const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {
+      events: routerEvents$.asObservable(),
+      routerState: { snapshot: {} }
+    });
 
-    TestBed.configureTestingModule({
+    const activatedSpy = jasmine.createSpyObj('ActivatedRoute', ['firstChild']);
+
+    const categoriesSpy = jasmine.createSpyObj('CategoriesService', ['getCategoriesByUserId', 'getAllExpenses()']);
+
+    const expensesSpy = jasmine.createSpyObj('ExpensesService', [
+      'getCategoriesByUserId', 'getAllExpenses', 'getUserExpensesWithCatName'
+    ]);
+
+    await TestBed.configureTestingModule({
       imports: [ExpenseListComponent],
-      providers: [{ provide: ExpensesService, useValue: mockExpensesService }]
+      providers: [
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+        { provide: AuthService, useValue: authSpy },
+        { provide: CategoriesService, useValue: categoriesSpy },
+        { provide: ExpensesService, useValue: expensesSpy },
+        { provide: Router, useValue: routerSpy },
+        { provide: ActivatedRoute, useValue: activatedSpy }
+      ],
+      schemas: [NO_ERRORS_SCHEMA] // ignore routerLink and other unknown elements
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
-    mockExpensesService.getExpenses.and.returnValue(of(mockExpenses));
+    router = TestBed.inject(Router) as jasmine.SpyObj<Router>;
+    authService = TestBed.inject(AuthService) as jasmine.SpyObj<AuthService>;
+    httpMock = TestBed.inject(HttpTestingController);
+    categoriesService = TestBed.inject(CategoriesService) as jasmine.SpyObj<CategoriesService>;
+    expensesService = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
+
     fixture = TestBed.createComponent(ExpenseListComponent);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    authService.isAuthenticated.and.returnValue(false);
+  });
+
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('should create the component', () => {
@@ -59,6 +71,24 @@ describe('ExpenseListComponent', () => {
   });
 
   it('should display a table of expenses when expenses exist', () => {
+    expensesService.getUserExpensesWithCatName.and.returnValue(of([{
+      userId: 1,
+      amount: 50,
+      categoryId: '9',
+      description: 'Lunch at restaurant',
+      date: '2023-10-01',
+      categoryName: 'Food',
+    }, {
+      userId: 1,
+      amount: 20,
+      categoryId: '10',
+      description: 'Bus ticket',
+      date: '2023-10-02',
+      categoryName: 'Transport',
+    }]));
+
+    fixture = TestBed.createComponent(ExpenseListComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
     const rows = fixture.debugElement.queryAll(By.css('.expense-page__table-row'));
     const firstDataRow = rows[1]; // row[0] is the header
@@ -67,7 +97,7 @@ describe('ExpenseListComponent', () => {
   });
 
   it('should display "No expenses found." when the expenses array is empty', () => {
-    mockExpensesService.getExpensesWithCategory.and.returnValue(of([]));
+    expensesService.getUserExpensesWithCatName.and.returnValue(of([]));
     fixture = TestBed.createComponent(ExpenseListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -78,7 +108,7 @@ describe('ExpenseListComponent', () => {
   // Optional: error handling (not requested, but useful)
   it('should set errorMessage if getExpenses throws error', () => {
     const error = { message: 'Failed to load' };
-    mockExpensesService.getExpenses.and.returnValue(throwError(() => error));
+    expensesService.getUserExpensesWithCatName.and.returnValue(throwError(() => error));
     fixture = TestBed.createComponent(ExpenseListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
