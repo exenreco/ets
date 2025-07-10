@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { QandAComponent } from './qand-a.component';
+import { QAndAComponent } from './q-and-a.component';
 
-describe('QandAComponent', () => {
-  let component: QandAComponent;
-  let fixture: ComponentFixture<QandAComponent>;
+describe('QAndAComponent', () => {
+  let component: QAndAComponent;
+  let fixture: ComponentFixture<QAndAComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [QandAComponent]
+      imports: [QAndAComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(QandAComponent);
+    fixture = TestBed.createComponent(QAndAComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

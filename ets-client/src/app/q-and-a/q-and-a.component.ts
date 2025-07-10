@@ -1,11 +1,11 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-qand-a',
+  selector: 'app-q-and-a',
   standalone: true,
   imports: [],
   template: `
-   <div class="__pages __qNa">
+    <<div class="__pages __qNa">
       <div class="container">
         <ol class="__qNa-list">
           <li class="item">
@@ -51,4 +51,6 @@ import { Component } from '@angular/core';
     }
   `
 })
-export class QandAComponent {}
+export class QAndAComponent {
+
+}

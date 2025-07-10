@@ -59,7 +59,7 @@ import { CategoriesService, Category } from '../../categories/categories.service
               </div>
 
               <div class="__form_group">
-                <label for="description">Description: <span class="required">*</span></label>
+                <label for="description">Description: <span class="__form_required">*</span></label>
                 <input
                   type="text"
                   id="description"
