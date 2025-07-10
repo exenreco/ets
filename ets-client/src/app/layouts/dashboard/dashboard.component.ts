@@ -75,7 +75,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </ul>
           </li>
           <li class="__nav_item">
-            <a class="__link __toggle" href="#" style="font-weight:bolder;">
+            <a class="__link __toggle" routerLink="/dashboard/q-and-a" style="font-weight:bolder;">
               <span class="__icon"><i class="fa-solid fa-clipboard-question"></i></span>
               <span class="__title">Question & Answers</span>
             </a>

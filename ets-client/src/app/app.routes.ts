@@ -13,6 +13,7 @@ import { ForgottenUsernameComponent } from './security/forgotten-username/forgot
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
 import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
 import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update.component';
+import { QandAComponent } from './qand-a/qand-a.component';
 
 
 /**
@@ -49,6 +50,7 @@ export const authenticatedRoutes: Routes = [
   { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
   { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Add Expense'} },
   { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update Expense'} },
+  { path: 'q-and-a', component: QandAComponent, data: {title:'Questions and answers'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
   { path: 'expense-list', component: ExpenseListComponent, data: {title: 'Expense List'} },
