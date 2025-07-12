@@ -34,7 +34,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
         <aside class="__gutter">
           <form class="__form">
 
-            <h2 class="__form_title">Reset Username</h2>
+            <h2 class="__form_title center">Reset Username</h2>
 
             <p class="__article_text center sm-line-height">
               some other text goes here...

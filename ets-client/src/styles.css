@@ -84,6 +84,10 @@ input, textarea, select, button, .__button {
   margin: 4px auto 20px auto;
   border-color: var(--secondary-color, #DD2D4A);
 }
+button:disabled, .__button:disabled {
+  opacity: .2 !important;
+}
+
 input::placeholder, textarea::placeholder, select {
   background: transparent;
 }
@@ -290,6 +294,15 @@ a:hover {
 }
 
 /* Typography: */
+.__text {
+  font-size: 1rem;
+  color: #858484;
+  text-align: left;
+  text-indent: 6px;
+  font-weight: normal;
+  line-height: 1.82rem;
+  display: inline-block;
+}
 .__article_title {
   padding: 12px;
   display: flex;
@@ -332,15 +345,21 @@ a:hover {
   display: flex;
   flex: 0 0 auto;
   color: #858484;
-  text-align: center;
-  font-size: 1.42rem;
+  text-align: left;
+  font-size: .982rem;
   font-weight: bolder;
   margin-bottom: 2px;
   line-height: 1.82rem;
+  align-items: flex-start;
+  justify-items: left;
+  justify-content: left;
+  width: calc(100% - 24px);
+}
+.__form_title.center {
+  text-align: center;
   align-items: center;
   justify-items: center;
   justify-content: center;
-  width: calc(100% - 24px);
 }
 .__form {
   margin: auto;
@@ -397,6 +416,37 @@ a:hover {
   font-weight: 100;
   font-style: italic;
 }
+.__form-notification {
+  gap: 4px;
+  color: #fff;
+  display: flex;
+  padding: 6px;
+  flex: 0 0  auto;
+  margin-top: 6px;
+  font-size: .825rem;
+  flex-direction: row;
+  border-radius: 0.4em;
+  justify-items: center;
+  align-items: flex-start;
+  width: calc(100% - 12px);
+  justify-content: flex-start;
+}
+.__form-notification > * {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+  width: calc(100% - 24px);
+}
+.__form-notification.error {
+  background: rgb(236, 81, 81) !important;
+}
+.__form-notification.warn{
+  background: rgb(180, 120, 40) !important
+}
+.__form-notification.success{
+  background: rgb(81, 189, 81) !important
+}
 
 
 /* LINKS: */
@@ -439,4 +489,15 @@ a:hover {
 }
 .__article_link.__has_icon .__title {
   width: auto;
+}
+
+
+/* LISTS */
+.__list {
+  display: block;
+  padding: 12px;
+  list-style: circle outside;
+  list-style-type: circle;
+  list-style-position: outside;
+  width: calc(100% - 29px);
 }

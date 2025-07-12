@@ -6,6 +6,7 @@ import { environment } from '../../environments/environment';
 
 export interface Category {
   name?:        string;
+  userId:       any;
   categoryId:   any;
   description?: string;
 }

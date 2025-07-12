@@ -1,6 +1,6 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ExpenseListComponent } from './expense-list.component';
-import { ExpensesService, Expense, ExpenseWithCategoryName} from '../expenses.service';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { QAndAComponent } from './q-and-a.component';
+import { ExpensesService } from '../../expenses/expenses.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
 import { By } from '@angular/platform-browser';
@@ -10,9 +10,9 @@ import { AuthService } from '../../security/auth.service';
 import { CategoriesService } from '../../categories/categories.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('ExpenseListComponent', () => {
-  let component: ExpenseListComponent;
-  let fixture: ComponentFixture<ExpenseListComponent>;
+describe('QAndAComponent', () => {
+  let component: QAndAComponent;
+  let fixture: ComponentFixture<QAndAComponent>;
   let expensesService: jasmine.SpyObj<ExpensesService>;
   let authService: jasmine.SpyObj<AuthService>;
   let httpMock: HttpTestingController;
@@ -35,9 +35,10 @@ describe('ExpenseListComponent', () => {
     const activatedSpy = jasmine.createSpyObj('ActivatedRoute', ['firstChild']);
 
     const categoriesSpy = jasmine.createSpyObj('CategoriesService', [
-      'getAllCategoriesByUserId',
-      'getAllCategories'
+      'getCategoryNameById',
+      'getAllCategoriesByUserId'
     ]);
+
     categoriesSpy.getAllCategoriesByUserId.and.returnValue(of([
       { name: 'Food', categoryId: 243545, description: 'Grocery' },
       { name: 'Rent', categoryId: 243545, description: 'utilities' }
@@ -49,7 +50,7 @@ describe('ExpenseListComponent', () => {
     ]);
 
     await TestBed.configureTestingModule({
-      imports: [ExpenseListComponent],
+      imports: [QAndAComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -69,7 +70,7 @@ describe('ExpenseListComponent', () => {
     expensesService = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
 
 
-    fixture = TestBed.createComponent(ExpenseListComponent);
+    fixture = TestBed.createComponent(QAndAComponent);
     component = fixture.componentInstance;
     authService.isAuthenticated.and.returnValue(false);
   });
@@ -80,57 +81,5 @@ describe('ExpenseListComponent', () => {
 
   it('should create the component', () => {
     expect(component).toBeTruthy();
-  });
-
-  it('should display a table of expenses when expenses exist', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([{
-      date:         '2023-10-01',
-      userId:       2000000,
-      amount:       '50.00',
-      expenseId:    30034,
-      categoryId:   405055,
-      description: 'Lunch at restaurant',
-      categoryName: 'Food',
-      dateModified: '2023-10-01'
-    }, {
-      date:         '2023-10-02',
-      userId:       1005654,
-      amount:       '20.00',
-      expenseId:    90034,
-      categoryId:   675675,
-      description:  'Bus ticket',
-      categoryName: 'Transport',
-      dateModified: '2023-10-01'
-    }]));
-
-    fixture.detectChanges();
-    const rows = fixture.debugElement.queryAll(By.css('.expense-page__table-row'));
-    const firstDataRow = rows[1]; // row[0] is the header
-    const cells = firstDataRow.queryAll(By.css('.expense-page__table-cell'));
-    expect(cells[1].nativeElement.textContent).toContain('Food');
-  });
-
-  it('should display "No expenses found." when the expenses array is empty', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([]));
-    fixture.detectChanges();
-    const msg = fixture.debugElement.query(By.css('.expense-page__no-expenses'));
-    expect(msg?.nativeElement.textContent).toContain('There are no Expenses available, try adding some expense!');
-  });
-
-  // Optional: error handling (not requested, but useful)
-  it('should set errorMessage if getExpenses throws error', () => {
-    const error = { message: 'Failed to load' };
-    expensesService.getUserExpensesWithCatName.and.returnValue(throwError(() => error));
-    fixture = TestBed.createComponent(ExpenseListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-    expect(component.errorMessage).toBe('Failed to load');
-  });
-
-  // Optional: error handling (not requested, but useful)
-  it('should have no expense', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([]));
-    fixture.detectChanges();
-    expect(component.expenses.length).toBe(0);
   });
 });

@@ -13,7 +13,9 @@ import { ForgottenUsernameComponent } from './security/forgotten-username/forgot
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
 import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
 import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update.component';
-import { QAndAComponent } from './q-and-a/q-and-a.component';
+import { QAndAComponent } from './support/q-and-a/q-and-a.component';
+import { ContactComponent } from './support/contact/contact.component';
+import { SettingsComponent } from './settings/settings.component';
 
 
 /**
@@ -48,12 +50,14 @@ export const authenticatedRoutes: Routes = [
   { path: '', redirectTo: '/dashboard/overview', pathMatch: 'full' },
   { path: '404', component: ErrorDashboardComponent, data: {title:'Error: 404'} },
   { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
-  { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Add Expense'} },
-  { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update Expense'} },
-  { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions and answers'} },
+  { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Create a new expense'} },
+  { path: 'expense-list', component: ExpenseListComponent, data: {title: 'All expenses'} },
+  { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update expenses'} },
+  { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions & answers'} },
+  { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
+  { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
-  { path: 'expense-list', component: ExpenseListComponent, data: {title: 'Expense List'} },
   { path: '**', redirectTo: '/dashboard/404', pathMatch: 'full' },
 ];
 

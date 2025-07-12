@@ -1,49 +1,117 @@
+import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
-import { ExpensesService } from './expenses.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { environment } from '../../environments/environment';
+import { Expense, ExpensesService } from './expenses.service';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { HttpTestingController,  provideHttpClientTesting } from '@angular/common/http/testing';
 
 describe('ExpensesService', () => {
-  let service: ExpensesService;
-  let httpMock: HttpTestingController;
+  let expensesService: ExpensesService, httpMock: HttpTestingController;
 
-  beforeEach(() => {
+  beforeEach(async () => {
+
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule], // <-- Add this!
-      providers: [ExpensesService]
+
+      imports: [],
+
+      providers: [
+        ExpensesService,
+        provideHttpClient(withInterceptorsFromDi()),
+        provideHttpClientTesting(),
+      ]
+
     });
 
-    service = TestBed.inject(ExpensesService);
     httpMock = TestBed.inject(HttpTestingController);
+
+    expensesService = TestBed.inject(ExpensesService);
   });
 
   afterEach(() => {
     httpMock.verify();
   });
 
-  it('should be created', () => {
-    expect(service).toBeTruthy();
+  it('└── should create the Expenses Service', () => {
+    expect(expensesService).toBeTruthy();
   });
 
-  /*it('should fetch expenses via GET', () => {
-    const mockExpenses = [
-      {
-        _id: '1',
-        userId: 1,
-        categoryId: 'Food',
-        amount: 10,
-        description: 'Lunch',
-        date: '2025-07-01',
-        dateCreated: '2025-07-01T12:00:00Z',
-        dateModified: '2025-07-01T12:00:00Z'
-      }
-    ];
-    service.getExpenses().subscribe(expenses => {
-      expect(expenses).toEqual(mockExpenses);
-    });
+  it('└── should allow users to add a new expense', () => {
+    const mockReq:  Expense[] = [{
+      date:           'January 12, 2025',
+      userId:         202303,
+      amount:         '15.99',
+      expenseId:      4000045,
+      categoryId:     5000055,
+      description:    'Car wash',
+      dateCreated:    'January 12, 2025',
+      dateModified:   'January 12, 2025',
+    }];
 
-    const req = httpMock.expectOne(`${environment.apiBaseUrl}/api/expenses`);
-    expect(req.request.method).toBe('GET');
-    req.flush(mockExpenses);
-  });*/
+    spyOn(expensesService, 'addExpense').and.returnValue(of(mockReq));
+
+    let result: Expense[] | undefined;
+
+    expensesService.addExpense(mockReq[0]).subscribe(res => result = res);
+
+    expect(expensesService.addExpense).toHaveBeenCalledWith(mockReq[0]);// Assert that the spy was called
+
+    expect(result).toEqual(mockReq); // And assert that the result matches
+  });
+
+  it('└── should update an existing expense', () => {
+    const
+    mockReq:  Expense[] = [{
+      date:           'January 12, 2025',
+      userId:         202303,
+      amount:         '15.99',
+      expenseId:      4000045,
+      categoryId:     5000055,
+      description:    'Car wash',
+      dateCreated:    'January 12, 2025',
+      dateModified:   'January 12, 2025',
+    }];
+
+    spyOn(expensesService, 'updateExpense').and.returnValue(of(mockReq));
+
+    let result: Expense[] | undefined;
+
+    expensesService.updateExpense(mockReq[0]).subscribe(res => result = res);
+
+    expect(expensesService.updateExpense).toHaveBeenCalledWith(mockReq[0]);
+
+    expect(result).toEqual(mockReq);
+  });
+
+  it('└── should get all expense by user id', () => {
+    const
+    mockRes:  Expense[] = [{
+      date:           'January 12, 2025',
+      userId:         202303,
+      amount:         '15.99',
+      expenseId:      4000045,
+      categoryId:     5000055,
+      description:    'Car wash',
+      dateCreated:    'January 12, 2025',
+      dateModified:   'January 12, 2025',
+    },
+    {
+      date:           'January 12, 2025',
+      userId:         202303,
+      amount:         '15.99',
+      expenseId:      4000045,
+      categoryId:     5000055,
+      description:    'Paint Car',
+      dateCreated:    'January 12, 2025',
+      dateModified:   'January 12, 2025',
+    }];
+
+    spyOn(expensesService, 'getAllExpensesByUserId').and.returnValue(of(mockRes));
+
+    let result: Expense[] | undefined;
+
+    expensesService.getAllExpensesByUserId().subscribe(res => result = res);
+
+    expect(expensesService.getAllExpensesByUserId).toHaveBeenCalledWith();
+
+    expect(result).toEqual(mockRes);
+  });
 });

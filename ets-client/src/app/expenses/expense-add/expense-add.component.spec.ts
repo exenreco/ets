@@ -7,8 +7,8 @@ import { By } from '@angular/platform-browser';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { Subject } from 'rxjs';
-import { CategoriesService } from '../../categories/categories.service';
+import { of, Subject } from 'rxjs';
+import { CategoriesService, Category } from '../../categories/categories.service';
 
 describe('ExpenseAddComponent', () => {
   let component: ExpenseAddComponent;
@@ -29,7 +29,13 @@ describe('ExpenseAddComponent', () => {
 
     const activatedSpy = jasmine.createSpyObj('ActivatedRoute', ['firstChild']);
 
-    const categorySpy = jasmine.createSpyObj('CategoriesService', ['getCategoriesByUserId']);
+    const categorySpy = jasmine.createSpyObj('CategoriesService', [
+      'getAllCategoriesByUserId'
+    ]);
+    categorySpy.getAllCategoriesByUserId.and.returnValue(of([
+      { name: 'Food', categoryId: 243545, description: 'Grocery' },
+      { name: 'Rent', categoryId: 243545, description: 'utilities' }
+    ]));
 
     await TestBed.configureTestingModule({
       imports: [
@@ -57,26 +63,35 @@ describe('ExpenseAddComponent', () => {
     authService.isAuthenticated.and.returnValue(false);
   });
 
-  it('should create', () => {
+  it('└── should create the add expense component', () => {
     expect(component).toBeTruthy();
   });
 
-  /*it('should redirect authenticated users to dashboard on init', () => {
-    authService.isAuthenticated.and.returnValue(true);
-    component.ngOnInit();
-    expect(router.navigate).toHaveBeenCalledWith(['/dashboard']);
+  it('└── should display the add expense form', () => {
+    const form = fixture.debugElement.queryAll(By.css('.addExpenseForm'));
+    expect(form).toBeTruthy();
   });
-
-  it('should not redirect unauthenticated users', () => {
-    authService.isAuthenticated.and.returnValue(false);
-    component.ngOnInit();
-    expect(router.navigate).not.toHaveBeenCalled();
-  });*/
-
-  /*it('should have a link back to signin page', () => {
+  it('└── should allow users to choose an expense category', () => {
+    fixture = TestBed.createComponent(ExpenseAddComponent);
+    component = fixture.componentInstance;
+    component.categories =  [
+      {categoryId:  1000, userId: 30003, name: 'Grocery', description: 'spent on food'}
+    ];
     fixture.detectChanges();
-    const link = fixture.debugElement.query(By.css('a.return_home'));
-    expect(link).toBeTruthy();
-    expect(link.nativeElement.textContent).toContain('Back to sign in');
-  });*/
+    const
+    selectEl = fixture.debugElement.query(By.css('#categoryId')),
+    optionOne = selectEl.queryAll(By.css('.category-option'));
+    expect(optionOne[1].nativeElement.textContent).toContain(component.categories[0].name);
+  });
+  it('└── should not allow amount less that $0.01', () => {
+    fixture = TestBed.createComponent(ExpenseAddComponent);
+    component = fixture.componentInstance;
+    component.addExpenseForm.get('amount')!.setValue('0');
+    component.addExpenseForm.markAllAsTouched();
+    fixture.detectChanges();
+    const
+    errorEl = fixture.debugElement.queryAll(By.css('.__form_error')),
+    amountErrorEl = errorEl[0];
+    expect(amountErrorEl.nativeElement.textContent).toContain('a valid amount is required (min $0.01)!');
+  });
 });

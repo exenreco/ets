@@ -1,9 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CategoriesService, Category} from '../../categories/categories.service';
-import { ExpensesService, Expense, ExpenseWithCategoryName } from '../expenses.service';
-import { forkJoin, map, Observable, switchMap } from 'rxjs';
+import { ExpensesService, ExpenseWithCategoryName } from '../expenses.service';
 
 @Component({
   selector: 'app-expense-list',
@@ -40,8 +38,8 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
       } @else {
         <div class="__grid rows">
           <span>
-            There are no Expenses available, try adding some expense!
-            <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
+            <span class="expense-page__no-expenses">There are no Expenses available, try adding some expense!</span>
+            <a class="__link" routerLink="/dashboard/add-expense"> Add Expense</a>
           </span>
         </div>
       }
@@ -71,7 +69,7 @@ import { forkJoin, map, Observable, switchMap } from 'rxjs';
     }
   `
 })
-export class ExpenseListComponent {
+export class ExpenseListComponent implements OnInit {
 
   errorMessage: string = '';
 
@@ -82,9 +80,9 @@ export class ExpenseListComponent {
   ngOnInit() {
     this.expenseService.getUserExpensesWithCatName().subscribe({
       next: (res => this.expenses = res),
-      error: (error) => {
+      error: (error: any) => {
+        if( error && error.message ) this.errorMessage = error.message;
         console.error(`Error fetching expenses: ${error}`);
-        this.errorMessage = error.message;
       }
     })
   }

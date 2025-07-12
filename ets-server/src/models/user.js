@@ -36,7 +36,7 @@ const
       unique: true, 
       lowercase: true, 
       trim: true,
-      match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
+      match: [/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Please fill a valid email address']
     }
   },
   {
@@ -75,6 +75,19 @@ userSchema.pre('validate', async function(next) {
   
   if (!isUnique)
     return next(new Error('Unable to generate unique userId after 10 attempts'));
+
+  next();
+});
+
+// Capitalize first letter of first and last name
+userSchema.pre('save', function(next) {
+  if (this.isModified('firstName') && typeof this.firstName === 'string') {
+    this.firstName = this.firstName.charAt(0).toUpperCase() + this.firstName.slice(1);
+  }
+
+  if (this.isModified('lastName') && typeof this.lastName === 'string') {
+    this.lastName = this.lastName.charAt(0).toUpperCase() + this.lastName.slice(1);
+  }
 
   next();
 });

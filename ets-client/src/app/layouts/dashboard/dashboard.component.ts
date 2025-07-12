@@ -74,11 +74,22 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
               </li>
             </ul>
           </li>
-          <li class="__nav_item">
-            <a class="__link __toggle" routerLink="/dashboard/q-and-a" style="font-weight:bolder;">
-              <span class="__icon"><i class="fa-solid fa-clipboard-question"></i></span>
-              <span class="__title">Question & Answers</span>
-            </a>
+          <li class="__nav_item" [class.active]="submenuStates['support']">
+            <span class="__toggle" (click)="toggleSubmenu('support')">
+              <span class="__icon"><i class="fa-solid fa-headset"></i></span>
+              <span class="__title">Support</span>
+            </span>
+            <ul class="__submenu">
+              <li class="__submenu_item">
+                <a class="__link"  routerLink="/dashboard/q-and-a">Questions & Answers</a>
+              </li>
+              <li class="__submenu_item">
+                <a class="__link" href="#">Financial Advisor</a>
+              </li>
+              <li class="__submenu_item">
+                <a class="__link" routerLink="/dashboard/contact">Contact</a>
+              </li>
+            </ul>
           </li>
         </ul>
         <footer class="__menu_footer">
@@ -124,7 +135,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 </a>
               </li>
               <li class="__menu_item">
-                <a class="__link" href="#" title="Account Settings">
+                <a class="__link" title="Account Settings" routerLink="/dashboard/account-setting">
                   <span class="__icon"><i class="fa-solid fa-gear"></i></span>
                   <span class="__title">Account Settings</span>
                 </a>
@@ -643,9 +654,10 @@ export class DashboardComponent implements OnInit {
   // Track menu, submenu and account states individually
   submenuStates: { [key: string]: boolean } = {
     menu: true,
+    support: true,
     account: false,
     expenses: true,
-    categories: true
+    categories: true,
   };
 
   constructor(
@@ -695,14 +707,13 @@ export class DashboardComponent implements OnInit {
 
   // update the user profile initial
   updateUserInitial(): void {
-
-    if( this.authService.getUserName() ) {
-
-      const username = this.authService.getUserName();
-
-      this.userInitial = username?.[0]?.toUpperCase() ?? 'U';
-
-    }
+    this.authService.getUsername().subscribe({
+      next: (username:string) => this.userInitial = username?.[0]?.toUpperCase() ?? 'U',
+      error: (err:any) =>{
+        this.authService.handleAuthError(err);
+        console.error('User initials Error: ', err);
+      }
+    });
   }
 
   // Toggle specific submenu

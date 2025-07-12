@@ -1,10 +1,11 @@
-import { tap } from 'rxjs/operators';
+import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
+import { of } from 'rxjs';
 
 
 @Injectable({
@@ -78,8 +79,43 @@ export class AuthService {
   }
 
   // return the loggedIn user -> username
-  getUserName(): any {
-    return this.cookieService.get('sessionUserName');
+  getUsername(): any {
+    return this.http
+      .get<string[]>(`${environment.apiBaseUrl}/api/users/${this.getUserId()}/username`)
+      .pipe(catchError(error => {
+        console.error('Error fetching username:', error);
+        return of('');
+      }));
+  }
+
+  // return the loggedIn user -> email
+  getUserEmail(): any {
+    return this.http
+      .get<string[]>(`${environment.apiBaseUrl}/api/users/${this.getUserId()}/email`)
+      .pipe(catchError(error => {
+        console.error('Error fetching username:', error);
+        return of('');
+      }));
+  }
+
+  // return the loggedIn user -> email
+  isValidPassword(password:string): any {
+    return this.http
+      .get<string[]>(`${environment.apiBaseUrl}/api/users/${this.getUserId()}?password=${password}`)
+      .pipe(catchError(error => {
+        console.error('Error validating password:', error);
+        return of('');
+      }));
+  }
+
+  // update user -> username
+  patchOneUserField( data: { [key: string]: string } = { field: '', before: '', after: ''}): any {
+    return this.http
+      .patch(`${environment.apiBaseUrl}/api/users/${this.getUserId()}`, { ...data })
+      .pipe(catchError(error => {
+        console.error('Error updating user field:', error);
+        return of('');
+      }));
   }
 
   // logs users out

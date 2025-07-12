@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { CategoriesService } from '../../categories/categories.service';
-import { environment } from '../../../environments/environment';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { NgIf, NgFor } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../security/auth.service';
 import { ExpensesService, Expense } from '../expenses.service';
+import { CategoriesService } from '../../categories/categories.service';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-expense-add',
@@ -52,8 +51,8 @@ import { ExpensesService, Expense } from '../expenses.service';
               name="categoryId"
               formControlName="categoryId"
             >
-              <option value="" disabled>Select a category</option>
-              <option *ngFor="let cat of categories" [value]="cat.categoryId">{{ cat.name }}</option>
+              <option class="category-option" value="" disabled>Select a category</option>
+              <option class="category-option" *ngFor="let cat of categories" [value]="cat.categoryId">{{ cat.name }}</option>
             </select>
             <div *ngIf="addExpenseForm.get('categoryId')?.invalid && addExpenseForm.get('categoryId')?.touched" class="__form_error">
               a category must be selected!
@@ -146,8 +145,6 @@ export class ExpenseAddComponent implements OnInit {
   constructor(
 
     private fb: FormBuilder,
-
-    private http: HttpClient,
 
     private authService: AuthService,
 

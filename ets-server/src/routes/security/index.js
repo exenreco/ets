@@ -1,24 +1,32 @@
 'use strict';
 
-const // Requirements
+const 
 
-    path = require('path'),
+  // Requirements
 
-    dotenv = require('dotenv'),
+  path = require('path'),
 
-    express = require('express'),
+  dotenv = require('dotenv'),
 
-    router = express.Router(),
+  express = require('express'),
 
-    bcrypt = require('bcryptjs'),
+  router = express.Router(),
 
-    jwt = require('jsonwebtoken'),
+  jwt = require('jsonwebtoken'),
 
-    mongoose = require('mongoose'),
+  mongoose = require('mongoose'),
 
-    Users = require('../../models/user'),
+  Users = require('../../models/user'),
 
-    createError = require('http-errors')
+  createError = require('http-errors'),
+
+  // regex
+  
+  emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+
+  passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z0-9_.~-]{8,}$/,
+
+  usernameRegex = /^[a-zA-Z0-9_]+$/
 ;
 
 // Load environment variables from server/.env
@@ -39,73 +47,91 @@ dotenv.config({ path: path.join(__dirname, '../../.env') });
  * @Date July 03, 2025
  * 
  */
-router.post( '/register-user', async (req, res, next) => {
+router.post( '/register', async (req, res, next) => {
 
-    try {
+  try {
 
-        const { email, firstName, lastName,  username, password } = req.body;
-        
-        // Basic input validation
-        if ( ! firstName || ! lastName || ! username || ! email || ! password ) throw createError(
-            400, 
-            'All fields are required!'
-        );
+    const { email, firstName, lastName,  username, password } = req.body;
+    
+    // Basic input validation
+    if ( ! firstName || ! lastName || ! username || ! email || ! password ) return next(
+      createError( 400, 'All fields are required!')
+    );
 
-        const 
+    // email checks
+    if( ! emailRegex.test(email.toLowerCase().trim()) )return next(
+      createError( 400, 'invalid email!')
+    );
 
-            newUser = new Users({ // Create new users
-                email:      email.toLowerCase().trim(),
-                lastName:   lastName.trim(),
-                username:   username.trim(),
-                firstName:  firstName.trim(),
-                password:   password
-            }),
+    // username checks
+    if( ! usernameRegex.test(username.trim()) ) return next(
+      createError( 400, 'invalid username!')
+    );
 
-            savedUser = await newUser.save(), // Save user => Mongoose should handle schema requirements
-        
-            userResponse = { // curate response => remove sensitive data
-                email:          savedUser.email,
-                userId:         savedUser.userId,
-                lastName:       savedUser.lastName,
-                username:       savedUser.username,
-                firstName:      savedUser.firstName,
-                dateCreated:    savedUser.dateCreated
-            }
-        ;
+    // password checks
+    if( ! passwordRegex.test(password.trim()) ) return next(
+      createError( 400, 'invalid password!')
+    );
 
-        res.status(201).json({
-            user: userResponse,
-            message: `Welcome to the Expense tracking system ${userResponse.username}`
-        });
-        
-    } catch (err) {
+    const emailExists = Users.findOne({ email: email });
 
-        if ( err instanceof mongoose.Error.ValidationError ) { // Handle validation errors
+    if ( emailExists.email === email.toLowerCase().trim() ) return next( 
+      createError( 400, 'invalid email, email already exists!')
+    );
 
-            const errors = {};
+    const
+      newUser = new Users({ // Create new users
+        email:      email.toLowerCase().trim(),
+        lastName:   lastName.trim(),
+        username:   username.trim(),
+        firstName:  firstName.trim(),
+        password:   password.trim()
+      }),
 
-            Object.keys(err.errors).forEach(key => {
-                errors[key] = err.errors[key].message;
-            });
+      savedUser = await newUser.save(), // Save user => Mongoose should handle schema requirements
+  
+      userResponse = { // curate response => remove sensitive data
+        email:          savedUser.email,
+        userId:         savedUser.userId,
+        lastName:       savedUser.lastName,
+        username:       savedUser.username,
+        firstName:      savedUser.firstName,
+        dateCreated:    savedUser.dateCreated
+      }
+    ;
 
-            return res.status(400).json({ errors });
-        }
-        
-        if (err.code === 11000) { // Handle duplicate key errors
+    res.status(201).json({
+      user: userResponse,
+      message: `Welcome to the Expense tracking system ${userResponse.username}`
+    });
+      
+  } catch (err) {
 
-            const field = Object.keys(err.keyPattern)[0];
+    if ( err instanceof mongoose.Error.ValidationError ) { // Handle validation errors
 
-            return res.status(409).json({
-                error: `${field} already exists`
-            });
+      const errors = {};
 
-        }
+      Object.keys(err.errors).forEach(key => {
+        errors[key] = err.errors[key].message;
+      });
 
-        console.error('Registration error:', err);
+      return res.status(400).json({ errors });
+    }
+    
+    if (err.code === 11000) { // Handle duplicate key errors
 
-        next(createError(500, 'Server error'));
+      const field = Object.keys(err.keyPattern)[0];
+
+      return res.status(409).json({
+        error: `${field} already exists`
+      });
+
     }
 
+    console.error('Registration error:', err);
+
+    return next(createError(500, 'Server error'));
+  }
 });
 
 
@@ -131,18 +157,21 @@ router.post( '/signin', async (req, res, next) => {
     const { username, password } = req.body;
 
     // Input validation
-    if ( ! username || ! password )
-      throw createError(400, 'Username and Password are required!');
+    if ( ! username || ! password ) return next(
+      createError(400, 'Username and Password are required!')
+    );
 
     // Find user
     const user = await Users.findOne({ username });
-    if ( ! user )
-      throw createError(401, 'Invalid credentials');
+    if ( ! user ) return next(
+      createError(401, 'Invalid credentials')
+    );
 
     // Check password
     const isMatch = await user.comparePassword(password);
-    if ( ! isMatch )
-      throw createError(401, 'Invalid credentials');
+    if ( ! isMatch ) return next(
+      createError(401, 'Invalid credentials')
+    );
 
     // Successful authentication
     const token = jwt.sign(
@@ -151,17 +180,15 @@ router.post( '/signin', async (req, res, next) => {
       { expiresIn: '1d' }
     );
     
-    res.json({ token: token, userId: user.userId, username: user.username });
+    return res.json({ token: token, userId: user.userId, username: user.username });
 
   } catch (err) {
 
-    if (createError.isHttpError(err))
-      return next(err);
+    if (createError.isHttpError(err)) return next(err);
 
     console.error('Signin error:', err);
 
-    next(createError(500, 'Server error'));
-
+    return next(createError(500, 'Server error'));
   }
 
 });

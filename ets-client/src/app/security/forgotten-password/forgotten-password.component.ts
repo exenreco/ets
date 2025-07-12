@@ -23,7 +23,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
           </h2>
           <p class="__article_text">
             Place holder text
-            <a class="return_home __article_link __has_icon" routerLink="signin">
+            <a class="return_home __article_link __has_icon" routerLink="/">
                 <span class="__icon">
                   <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </span>
@@ -35,7 +35,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
         <aside class="__gutter">
           <form class="__form">
 
-            <h2 class="__form_title">Reset Password</h2>
+            <h2 class="__form_title center">Reset Password</h2>
 
             <p class="__article_text center sm-line-height">
               some other text goes here...

@@ -25,14 +25,14 @@ import { CategoriesService, Category } from '../../categories/categories.service
             <div class="__form_group">
               <label for="expenseId">Select Expense:</label>
               <select id="expenseId" name="expenseId" formControlName="expenseId">
-                <option value="" disabled>Choose an Expense to update</option>
+                <option class="expense-option" value="" disabled>Choose an Expense to update</option>
                 @for (exp of userExpenses; track exp) {
-                  <option [value]="exp.expenseId">{{exp.description}} - \${{ exp.amount }}</option>
+                  <option class="expense-option" [value]="exp.expenseId">{{exp.description}} - \${{ exp.amount }}</option>
                 }
               </select>
             </div>
           } @else {
-           <div class="__grid rows">
+           <div class="__grid rows no-expense">
               <span>
                 There is nothing to update, try adding some expenses!
                 <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
@@ -190,8 +190,6 @@ export class ExpenseUpdateComponent implements OnInit {
     private router: Router,
 
     private fb: FormBuilder,
-
-    private http: HttpClient,
 
     private authService: AuthService,
 
