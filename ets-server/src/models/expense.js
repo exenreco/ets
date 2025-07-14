@@ -1,8 +1,8 @@
-const 
+const
     mongoose = require('mongoose'),
-    
+
     { Schema } = mongoose,
-    
+
     expenseSchema = new Schema({
 
         userId: { type: Number, required: true, index: true },
@@ -36,19 +36,19 @@ expenseSchema.pre('save', function(next) {
 expenseSchema.pre('validate', async function(next) {
 
   if (!this.isNew || this.expenseId) return next();
-  
+
   const
     UserModel = this.constructor,
     min = 1000000000, // 10-digit min => (1,000,000,000)
     max = 9999999999; // 10-digit max => (9,999,999,999)
-  
-  let 
+
+  let
     isUnique = false,
     attempts = 0;
-  
+
   while (!isUnique && attempts < 10) {
     const candidateId = Math.floor(Math.random() * (max - min + 1)) + min;
-    
+
     try {
       const existingUser = await UserModel.findOne({ expenseId: candidateId });
       if (!existingUser) {
@@ -60,7 +60,7 @@ expenseSchema.pre('validate', async function(next) {
     }
     attempts++;
   }
-  
+
   if (!isUnique)
     return next(new Error('Unable to generate unique expenseId after 10 attempts'));
 

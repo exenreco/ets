@@ -1,12 +1,13 @@
-const 
+const
     app          = require('../../../src/app'),
     request      = require('supertest'),
     Expenses     = require('../../../src/models/expense');
+    mongoose     = require('mongoose');
 
 jest.mock('../../../src/models/expense');
 
 describe('GET /api/expenses', () => {
-    beforeEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
   });
 
@@ -83,6 +84,53 @@ describe('GET /api/expenses/user/:userId', () => {
     expect(res.status).toBe(500);
     expect(res.body).toHaveProperty('message');
   });
+
+  // NEW TESTS:
+
+  it('should handle string userId and convert to number for database query', async () => {
+    const mockExpenses = [
+      { userId: 5000, categoryId: 1003, amount: 150.75, description: 'Office supplies' },
+    ];
+
+    Expenses.find.mockResolvedValue(mockExpenses);
+
+    const res = await request(app).get('/api/expenses/user/5000');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(mockExpenses);
+    expect(Expenses.find).toHaveBeenCalledWith({userId: 5000});
+  });
+
+  it('should return 400 for invalid userId format', async () => {
+    const res = await request(app).get('/api/expenses/user/invalid-user-id');
+
+    expect(res.status).toBe(400);
+    expect(res.body).toHaveProperty('message');
+    expect(res.body.message).toMatch("invalid user id type!"); // Match actual message
+    expect(Expenses.find).not.toHaveBeenCalled();
+  });
+
+  it('should return only expenses belonging to the specified user', async () => {
+    const mockExpenses = [
+      { userId: 3000, categoryId: 1001, amount: 50.00, description: 'Lunch' },
+      { userId: 3000, categoryId: 1002, amount: 20.00, description: 'Coffee' },
+      { userId: 3000, categoryId: 1003, amount: 100.00, description: 'Books' },
+    ];
+
+    Expenses.find.mockResolvedValue(mockExpenses);
+
+    const res = await request(app).get('/api/expenses/user/3000');
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(mockExpenses);
+    expect(Expenses.find).toHaveBeenCalledWith({userId: 3000});
+
+    // Verify all returned expenses belong to the requested user
+    res.body.forEach(expense => {
+      expect(expense.userId).toBe(3000);
+    });
+  });
+
 });
 
 describe('POST /api/expenses/add-expense', () => {
@@ -189,6 +237,9 @@ describe('PUT /api/expenses/:expenseId', () => {
     expect(response.status).toBe(404);
     expect(response.body.message).toBe('Not Found');
   });
+});
 
+afterAll(async () => {
+  await mongoose.connection.close();
 });
 

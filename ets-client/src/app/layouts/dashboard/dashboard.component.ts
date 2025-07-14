@@ -61,7 +61,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </span>
             <ul class="__submenu">
               <li class="__submenu_item">
-                <a class="__link" href="#">All Categories</a>
+                <a class="__link" routerLink="/dashboard/category-list">All Categories</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" href="#">Add Category</a>
@@ -84,7 +84,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link"  routerLink="/dashboard/q-and-a">Questions & Answers</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Financial Advisor</a>
+                <a class="__link" routerLink="/dashboard/financial-advisor">Financial Advisor</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" routerLink="/dashboard/contact">Contact</a>
@@ -129,7 +129,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </div>
             <ul class="__user_menu">
               <li class="__menu_item">
-                <a class="__link" href="#" title="Financial Advisor">
+                <a class="__link" routerLink="/dashboard/financial-advisor" title="Financial Advisor">
                   <span class="__icon"><i class="fa-solid fa-headset"></i></span>
                   <span class="__title">Financial Advisor</span>
                 </a>

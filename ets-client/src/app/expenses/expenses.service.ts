@@ -7,6 +7,7 @@ import { environment } from '../../environments/environment';
 import { CategoriesService } from '../categories/categories.service';
 
 export interface Expense {
+  _id?:           string;
   date:           string;
   userId:         number;
   amount:         string;

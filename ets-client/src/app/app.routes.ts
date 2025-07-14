@@ -16,6 +16,9 @@ import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update
 import { QAndAComponent } from './support/q-and-a/q-and-a.component';
 import { ContactComponent } from './support/contact/contact.component';
 import { SettingsComponent } from './settings/settings.component';
+import { ExpenseByIdComponent } from './expenses/expense-by-id/expense-by-id.component';
+import { RequestAdvisorComponent } from './support/request-advisor/request-advisor.component';
+import { CategoryListComponent } from './categories/category-list/category-list.component';
 
 
 /**
@@ -56,8 +59,11 @@ export const authenticatedRoutes: Routes = [
   { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions & answers'} },
   { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
   { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
+  { path: 'expense-by-id', component: ExpenseByIdComponent, data: {title: 'Expense by Id'} },
+  { path: 'financial-advisor', component: RequestAdvisorComponent, data: {title:'Request an advisor'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
+  { path: 'category-list', component: CategoryListComponent, data: {title:'All categories'} },
   { path: '**', redirectTo: '/dashboard/404', pathMatch: 'full' },
 ];
 
