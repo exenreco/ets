@@ -1,5 +1,5 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
-import { ExpenseListComponent } from './expense-list.component';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ExpenseUpdateComponent } from './expense-update.component';
 import { ExpensesService, Expense, ExpenseWithCategoryName} from '../expenses.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { of, throwError, Subject } from 'rxjs';
@@ -10,9 +10,9 @@ import { AuthService } from '../../security/auth.service';
 import { CategoriesService } from '../../categories/categories.service';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 
-describe('ExpenseListComponent', () => {
-  let component: ExpenseListComponent;
-  let fixture: ComponentFixture<ExpenseListComponent>;
+describe('ExpenseUpdateComponent', () => {
+  let component: ExpenseUpdateComponent;
+  let fixture: ComponentFixture<ExpenseUpdateComponent>;
   let expensesService: jasmine.SpyObj<ExpensesService>;
   let authService: jasmine.SpyObj<AuthService>;
   let httpMock: HttpTestingController;
@@ -35,9 +35,10 @@ describe('ExpenseListComponent', () => {
     const activatedSpy = jasmine.createSpyObj('ActivatedRoute', ['firstChild']);
 
     const categoriesSpy = jasmine.createSpyObj('CategoriesService', [
-      'getAllCategoriesByUserId',
-      'getAllCategories'
+      'getCategoryNameById',
+      'getAllCategoriesByUserId'
     ]);
+
     categoriesSpy.getAllCategoriesByUserId.and.returnValue(of([
       { name: 'Food', categoryId: 243545, description: 'Grocery' },
       { name: 'Rent', categoryId: 243545, description: 'utilities' }
@@ -45,11 +46,12 @@ describe('ExpenseListComponent', () => {
 
     const expensesSpy = jasmine.createSpyObj('ExpensesService', [
       'getAllExpenses',
-      'getUserExpensesWithCatName'
+      'getUserExpensesWithCatName',
+      'getAllExpensesByUserId'
     ]);
 
     await TestBed.configureTestingModule({
-      imports: [ExpenseListComponent],
+      imports: [ExpenseUpdateComponent],
       providers: [
         provideHttpClient(withInterceptorsFromDi()),
         provideHttpClientTesting(),
@@ -69,7 +71,7 @@ describe('ExpenseListComponent', () => {
     expensesService = TestBed.inject(ExpensesService) as jasmine.SpyObj<ExpensesService>;
 
 
-    fixture = TestBed.createComponent(ExpenseListComponent);
+    fixture = TestBed.createComponent(ExpenseUpdateComponent);
     component = fixture.componentInstance;
     authService.isAuthenticated.and.returnValue(false);
   });
@@ -78,59 +80,86 @@ describe('ExpenseListComponent', () => {
     httpMock.verify();
   });
 
-  it('should create the component', () => {
+  it('└── should create the Expense update component', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display a table of expenses when expenses exist', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([{
-      date:         '2023-10-01',
-      userId:       2000000,
-      amount:       '50.00',
-      expenseId:    30034,
-      categoryId:   405055,
-      description: 'Lunch at restaurant',
-      categoryName: 'Food',
-      dateModified: '2023-10-01'
-    }, {
-      date:         '2023-10-02',
-      userId:       1005654,
-      amount:       '20.00',
-      expenseId:    90034,
-      categoryId:   675675,
-      description:  'Bus ticket',
-      categoryName: 'Transport',
-      dateModified: '2023-10-01'
-    }]));
+  it('└── should display a list that allows users to chooses the expense to update', () => {
+    const mockExpense: Expense[] = [{
+      date: 'Jan, 23, 3025',
+      userId: 10001,
+      amount: '12.99',
+      expenseId: 50002,
+      categoryId: 600034,
+      description: 'Grocery'
+    }];
 
-    fixture.detectChanges();
-    const rows = fixture.debugElement.queryAll(By.css('.expense-page__table-row'));
-    const firstDataRow = rows[1]; // row[0] is the header
-    const cells = firstDataRow.queryAll(By.css('.expense-page__table-cell'));
-    expect(cells[1].nativeElement.textContent).toContain('Food');
-  });
+    expensesService.getAllExpensesByUserId.and.returnValue(of([...mockExpense]));
 
-  it('should display "No expenses found." when the expenses array is empty', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([]));
-    fixture.detectChanges();
-    const msg = fixture.debugElement.query(By.css('.expense-page__no-expenses'));
-    expect(msg?.nativeElement.textContent).toContain('There are no Expenses available, try adding some expense!');
-  });
+    fixture = TestBed.createComponent(ExpenseUpdateComponent);
 
-  // Optional: error handling (not requested, but useful)
-  it('should set errorMessage if getExpenses throws error', () => {
-    const error = { message: 'Failed to load' };
-    expensesService.getUserExpensesWithCatName.and.returnValue(throwError(() => error));
-    fixture = TestBed.createComponent(ExpenseListComponent);
     component = fixture.componentInstance;
+
+    component.userExpenses=  [...mockExpense];
+
     fixture.detectChanges();
-    expect(component.errorMessage).toBe('Failed to load');
+
+    const
+
+    selectEl = fixture.debugElement.query(By.css('#expenseId')),
+
+    optionOne = selectEl.queryAll(By.css('.expense-option'));
+
+    expect(optionOne[1].nativeElement.textContent).toContain(
+      `${mockExpense[0].description} - \$${mockExpense[0].amount}`
+    );
   });
 
-  // Optional: error handling (not requested, but useful)
-  it('should have no expense', () => {
-    expensesService.getUserExpensesWithCatName.and.returnValue(of([]));
+  it('└── should display an error when a user has no expense', () => {
+    const mockExpense: Expense[] = [];
+
+    expensesService.getAllExpensesByUserId.and.returnValue(of([...mockExpense]));
+
+    fixture = TestBed.createComponent(ExpenseUpdateComponent);
+
+    component = fixture.componentInstance;
+
+    component.userExpenses=  [...mockExpense];
+
     fixture.detectChanges();
-    expect(component.expenses.length).toBe(0);
+
+    const errorEl = fixture.debugElement.query(By.css('.no-expense'));
+
+    expect(errorEl.nativeElement.textContent).toContain(
+      'There is nothing to update, try adding some expenses!'
+    );
+  });
+
+  it('└── should display the update expense form fields when an expense is selected', () => {
+
+    const mockExpense: Expense[] = [{
+      date: 'Jan, 23, 3025',
+      userId: 10001,
+      amount: '12.99',
+      expenseId: 50002,
+      categoryId: 600034,
+      description: 'Grocery'
+    }];
+
+    expensesService.getAllExpensesByUserId.and.returnValue(of([...mockExpense]));
+
+    fixture = TestBed.createComponent(ExpenseUpdateComponent);
+
+    component = fixture.componentInstance;
+
+    component.userExpenses =  [...mockExpense];
+
+    component.selectedExpenseData = mockExpense[0];
+
+    fixture.detectChanges();
+
+    const errorEl = fixture.debugElement.query(By.css('.update-fields-container'));
+
+    expect(errorEl.nativeElement).toBeTruthy();
   });
 });

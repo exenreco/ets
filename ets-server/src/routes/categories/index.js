@@ -14,20 +14,32 @@ const // Requirements
 // GET all categories
 router.get('/', async (req, res, next) => {
   try {
-    const categories = await Categories.find({});
-    res.json(categories);
+
+    const 
+    categories = await Categories.find({}),
+    resObj = {
+      name:         Category.name,
+      slug:         Category.slug,
+      categoryId:   Category.categoryId,
+      description:  Category.description,
+    };
+
+    if( categories ) res.json(resObj);
+
+    else throw createError(
+      404, 'invalid, categories not found!'
+    );
+
   } catch (err) {
     next(createError(500, "Internal server error", { detail: err.message }));
   }
 });
 
-// GET categories for specific user
-router.get('/:userId', async (req, res, next) => {
+// GET: Fetch all categories for specific user
+router.get('/get-user-categories', async (req, res, next) => {
   try {
 
-    const userId  = req.params.userId;
-
-    console.log(userId);
+    const userId  = req.query.userId;
     
     // a userId is required
     if ( ! userId ) throw createError(
@@ -41,14 +53,41 @@ router.get('/:userId', async (req, res, next) => {
     ));
 
     // record user categories
-    const categories = await Categories.find({ userId: userIdValue })
+    const 
+    categories = await Categories.find({ userId: userIdValue });
 
-    res.json(categories);
+    if( categories) res.json([...categories]);
+
+    else throw createError(
+      404, 'invalid, categories not found!'
+    );
 
   } catch (err) {
-
     next(createError(500, "Internal server error", { detail: err.message }));
+  }
+});
 
+// GET: Fetches and returns a single category name for the given id
+router.get('/get-name', async (req, res, next) => {
+  try {
+    const categoryId  = req.query.categoryId;
+    console.log(typeof categoryId);
+
+    // a categoryId is required
+    if ( ! categoryId ) throw createError(
+      400, 'a categoryId is required!'
+    );
+
+    // record category details
+    const categories = await Categories.findOne({ categoryId: categoryId });
+
+    if( categories && categories.name) res.json(categories.name); // return the category name
+    else throw createError(
+      404, 'invalid, category Name not found!'
+    );
+
+  } catch (err) {
+    next(createError(500, "Internal server error", { detail: err.message }));
   }
 });
 

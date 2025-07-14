@@ -1,36 +1,46 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, catchError, of } from 'rxjs';
-import { environment } from '../../environments/environment';
 import { AuthService } from '../security/auth.service';
+import { environment } from '../../environments/environment';
 
-export interface Category { categoryId: string; name: string; }
+export interface Category {
+  name?:        string;
+  userId:       any;
+  categoryId:   any;
+  description?: string;
+}
 
 @Injectable({ providedIn: 'root' })
 
-export class CategoryService {
+export class CategoriesService {
+
+  userId: any = this.authService.getUserId();
+
+  isAuthenticated: boolean = this.authService.isAuthenticated();
 
   constructor(private http: HttpClient, private authService: AuthService ) {}
 
-  getCategoriesByUserId(): Observable<Category[]> {
-    const
+  getAllCategories(): void{
+  }
 
-      userId = this.authService.getUserId(),
-
-      isAuthenticated = this.authService.isAuthenticated()
-    ;
-
-    if( isAuthenticated && userId  ) return this.http.get<Category[]>(
-          `${environment.apiBaseUrl}/api/categories/${userId}`
-        ).pipe(catchError(err => {
-
+  getCategoryNameById( categoryId: any ): Observable<String> {
+    if( this.isAuthenticated && this.isAuthenticated === true ) return this.http
+      .get<String>(`${environment.apiBaseUrl}/api/categories/get-name?categoryId=${encodeURI(categoryId)}`)
+      .pipe(catchError(err => {
           console.error('Error fetching categories:', err);
+          return of(''); // Return empty string on error
+      }));
+    else return of(''); // Return empty string
+  }
 
+  getAllCategoriesByUserId(): Observable<Category[]> {
+    if( this.isAuthenticated && this.isAuthenticated === true && this.userId ) return this.http
+      .get<Category[]>(`${environment.apiBaseUrl}/api/categories/get-user-categories?userId=${encodeURI(this.userId)}`)
+      .pipe(catchError(err => {
+          console.error('Error fetching categories:', err);
           return of([]); // Return empty array on error
-
-        })
-
-      );
+      }));
     else return of([]); // Return empty array on error
   }
 }

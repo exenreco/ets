@@ -32,7 +32,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
         <aside class="__gutter">
           <form class="__form" [formGroup]="signinForm" (ngSubmit)="signin();">
 
-            <h2 class="__form_title">Sign In</h2>
+            <h2 class="__form_title center">Sign In</h2>
 
             <p class="__article_text center sm-line-height">
               Smarter money management begins here...
@@ -120,7 +120,10 @@ export class SigninComponent implements OnInit {
   errorMsg: string[] = [];
 
   signinForm = this.fb.group({
-    username: [ '', [Validators.required] ],
+    username: [ '', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z0-9_]+$')
+    ]],
     password: [ '', [
       Validators.required,
       Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$')
@@ -146,7 +149,7 @@ export class SigninComponent implements OnInit {
 
   signin() {
 
-    this.authService.logout(); // log user out on signin
+
 
     const
       username = this.signinForm.controls['username'].value,
@@ -159,9 +162,13 @@ export class SigninComponent implements OnInit {
 
     if (!this.signinForm.valid) { // validity check
 
-      if (this.signinForm.get('username')?.invalid)
-        this.errorMsg.push('Username is required');
+      if (this.signinForm.get('username')?.invalid) {
+        if (this.signinForm.get('username')?.errors?.['required'])
+          this.errorMsg.push('Username is required');
 
+        if (this.signinForm.get('username')?.errors?.['pattern'])
+          this.errorMsg.push('Username can only contain letters, numbers and underscores');
+      }
       if (this.signinForm.get('password')?.invalid) {
 
         if (this.signinForm.get('password')?.errors?.['required'])
@@ -170,6 +177,9 @@ export class SigninComponent implements OnInit {
         if (this.signinForm.get('password')?.errors?.['pattern'])
           this.errorMsg.push('Password must be at least 8 characters with an uppercase, lowercase and number');
       }
+
+      this.authService.logout(); // log user out if signin
+
       return;
     }
 

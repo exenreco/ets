@@ -3,7 +3,7 @@ import { authGuard } from './security/auth.guard';
 import { RouterModule, Routes } from '@angular/router';
 import { OverviewComponent } from './layouts/dashboard/overview/overview.component';
 import { SigninComponent } from './security/signin/signin.component';
-import { AddExpenseComponent } from './expenses/add-expense/add-expense.component';
+import { ExpenseAddComponent } from './expenses/expense-add/expense-add.component';
 import { DashboardComponent } from './layouts/dashboard/dashboard.component';
 import { GlobalPagesComponent } from './layouts/global-pages/global-pages.component';
 import { RegistrationComponent } from './security/registration/registration.component';
@@ -12,6 +12,13 @@ import { ForgottenPasswordComponent } from './security/forgotten-password/forgot
 import { ForgottenUsernameComponent } from './security/forgotten-username/forgotten-username.component';
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
 import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
+import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update.component';
+import { QAndAComponent } from './support/q-and-a/q-and-a.component';
+import { ContactComponent } from './support/contact/contact.component';
+import { SettingsComponent } from './settings/settings.component';
+import { ExpenseByIdComponent } from './expenses/expense-by-id/expense-by-id.component';
+import { RequestAdvisorComponent } from './support/request-advisor/request-advisor.component';
+import { CategoryListComponent } from './categories/category-list/category-list.component';
 
 
 /**
@@ -46,10 +53,17 @@ export const authenticatedRoutes: Routes = [
   { path: '', redirectTo: '/dashboard/overview', pathMatch: 'full' },
   { path: '404', component: ErrorDashboardComponent, data: {title:'Error: 404'} },
   { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
-  { path: 'add-expense', component: AddExpenseComponent, data: {title:'Add Expense'} },
+  { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Create a new expense'} },
+  { path: 'expense-list', component: ExpenseListComponent, data: {title: 'All expenses'} },
+  { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update expenses'} },
+  { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions & answers'} },
+  { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
+  { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
+  { path: 'expense-by-id', component: ExpenseByIdComponent, data: {title: 'Expense by Id'} },
+  { path: 'financial-advisor', component: RequestAdvisorComponent, data: {title:'Request an advisor'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },
-  { path: 'expense-list', component: ExpenseListComponent, data: {title: 'Expense List'} },
+  { path: 'category-list', component: CategoryListComponent, data: {title:'All categories'} },
   { path: '**', redirectTo: '/dashboard/404', pathMatch: 'full' },
 ];
 

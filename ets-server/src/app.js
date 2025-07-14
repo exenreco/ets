@@ -43,7 +43,7 @@ let app = express();
 // CORS configuration
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*'); // This allows all origins
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS'); // Allowed request methods
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS'); // Allowed request methods
   res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept'); // Allowed headers
   next();
 });

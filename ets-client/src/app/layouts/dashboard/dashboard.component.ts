@@ -47,7 +47,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Update Expense</a>
+                <a class="__link" routerLink="/dashboard/update-expense">Update Expense</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" href="#">Delete Expense</a>
@@ -61,7 +61,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </span>
             <ul class="__submenu">
               <li class="__submenu_item">
-                <a class="__link" href="#">All Categories</a>
+                <a class="__link" routerLink="/dashboard/category-list">All Categories</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" href="#">Add Category</a>
@@ -74,18 +74,29 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
               </li>
             </ul>
           </li>
-          <li class="__nav_item">
-            <a class="__link __toggle" href="#" style="font-weight:bolder;">
-              <span class="__icon"><i class="fa-solid fa-clipboard-question"></i></span>
-              <span class="__title">Question & Answers</span>
-            </a>
+          <li class="__nav_item" [class.active]="submenuStates['support']">
+            <span class="__toggle" (click)="toggleSubmenu('support')">
+              <span class="__icon"><i class="fa-solid fa-headset"></i></span>
+              <span class="__title">Support</span>
+            </span>
+            <ul class="__submenu">
+              <li class="__submenu_item">
+                <a class="__link"  routerLink="/dashboard/q-and-a">Questions & Answers</a>
+              </li>
+              <li class="__submenu_item">
+                <a class="__link" routerLink="/dashboard/financial-advisor">Financial Advisor</a>
+              </li>
+              <li class="__submenu_item">
+                <a class="__link" routerLink="/dashboard/contact">Contact</a>
+              </li>
+            </ul>
           </li>
         </ul>
         <footer class="__menu_footer">
-          <a class="__link" title="Logout" (click)="onLogout()">
+          <button class="__button tertiary" title="Logout" type="button" (click)="onLogout()">
             <span class="__icon"><i class="fa-solid fa-right-from-bracket"></i></span>
             <span class="__title">Logout</span>
-          </a>
+          </button>
         </footer>
       </nav>
 
@@ -118,13 +129,13 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
             </div>
             <ul class="__user_menu">
               <li class="__menu_item">
-                <a class="__link" href="#" title="Financial Advisor">
+                <a class="__link" routerLink="/dashboard/financial-advisor" title="Financial Advisor">
                   <span class="__icon"><i class="fa-solid fa-headset"></i></span>
                   <span class="__title">Financial Advisor</span>
                 </a>
               </li>
               <li class="__menu_item">
-                <a class="__link" href="#" title="Account Settings">
+                <a class="__link" title="Account Settings" routerLink="/dashboard/account-setting">
                   <span class="__icon"><i class="fa-solid fa-gear"></i></span>
                   <span class="__title">Account Settings</span>
                 </a>
@@ -297,14 +308,23 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
         }
 
       .__dashboard .__dashboard_menu .__menu_footer {
-        bottom: 0px;
         z-index: 1;
         width: 20em;
+        bottom: 0px;
+        display: flex;
+        flex: 0 0 auto;
+        margin-bottom: 0;
         text-align: center;
         position: absolute;
+        align-items: center;
+        justify-items: center;
+        justify-content: center;
       }
-      .__dashboard .__dashboard_menu .__menu_footer .__link {
+      .__dashboard .__dashboard_menu .__menu_footer .__link,
+      .__dashboard .__dashboard_menu .__menu_footer .__button {
         gap: 12px;
+        width: 95%;
+        margin: 5px;
         display: flex;
         flex: 0 0 auto;
         flex-direction: row;
@@ -320,7 +340,8 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
       .__dashboard .__dashboard_menu .__menu_footer .__link,
       .__dashboard .__dashboard_menu .__menu_footer .__link:link,
       .__dashboard .__dashboard_menu .__menu_footer .__link:active,
-      .__dashboard .__dashboard_menu .__menu_footer .__link:visited {
+      .__dashboard .__dashboard_menu .__menu_footer .__link:visited,
+      .__dashboard .__dashboard_menu .__menu_footer .__button {
         color: #ffffff;
         font-weight: bolder;
         text-decoration: none;
@@ -329,6 +350,10 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
       .__dashboard .__dashboard_menu .__menu_footer a:hover,
       .__dashboard .__dashboard_menu .__menu_footer .__link:hover {
         color: var(--secondary-color, #DD2D4A);
+        transition: all 400ms ease-in-out;
+      }
+      .__dashboard .__dashboard_menu .__menu_footer .__button:hover {
+        color: #ffffff;
         transition: all 400ms ease-in-out;
       }
 
@@ -629,9 +654,10 @@ export class DashboardComponent implements OnInit {
   // Track menu, submenu and account states individually
   submenuStates: { [key: string]: boolean } = {
     menu: true,
+    support: true,
     account: false,
     expenses: true,
-    categories: true
+    categories: true,
   };
 
   constructor(
@@ -681,14 +707,13 @@ export class DashboardComponent implements OnInit {
 
   // update the user profile initial
   updateUserInitial(): void {
-
-    if( typeof this.authService.getUserName() === 'string' ) {
-
-      const username = this.authService.getUserName();
-
-      this.userInitial = username?.[0]?.toUpperCase() ?? 'U';
-
-    }
+    this.authService.getUsername().subscribe({
+      next: (username:string) => this.userInitial = username?.[0]?.toUpperCase() ?? 'U',
+      error: (err:any) =>{
+        this.authService.handleAuthError(err);
+        console.error('User initials Error: ', err);
+      }
+    });
   }
 
   // Toggle specific submenu
@@ -700,14 +725,11 @@ export class DashboardComponent implements OnInit {
 
   // Logout user account
   onLogout(): void {
-
-    this.authService.logout();
-
     // Remove all session cookie manual incase logout fails
     this.cookieService.delete('sessionUser');
     this.cookieService.delete('sessionUserId');
     this.cookieService.delete('sessionUserName');
     this.cookieService.deleteAll();
-
+    this.authService.logout();
   }
 }

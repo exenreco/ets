@@ -58,7 +58,14 @@ body {
   height: 100%;
   background: var(--background-color, #ffffff);
 }
-
+hr {
+  width: 100%;
+  height: 1.5px;
+  border: none;
+  outline: none;
+  display: block;
+  background: #dadada;
+}
 label {
   margin: 0;
   display: block;
@@ -67,18 +74,22 @@ label {
 }
 /* DEFAULT: Inputs, Buttons, Text-areas and Select elements
 **======================================================================================*/
-input, textarea, select, button, ._button {
+input, textarea, select, button, .__button {
   padding: 12px;
   box-sizing: 0;
   border-width: 1px;
   border-radius: 4px;
   border-style: solid;
-  width: calc(100% - 26px);
+  width: calc(90% - 26px);
   margin: 4px auto 20px auto;
-  border-color: var(--complimentary-color-soft-blue, #CBEEF3);
+  border-color: var(--secondary-color, #DD2D4A);
 }
+button:disabled, .__button:disabled {
+  opacity: .2 !important;
+}
+
 input::placeholder, textarea::placeholder, select {
-  font-style: italic;
+  background: transparent;
 }
 input[type="submit"], input[type="button"], .__button {
   width: 100%;
@@ -134,6 +145,12 @@ a:hover {
 }
 .__button.secondary:hover{
   background-color: var(--primary-color, #880D1E);
+}
+.__button.tertiary {
+  background-color: var(--secondary-color, #DD2D4A);
+}
+.__button.tertiary:hover {
+  background-color: var(--primary-color-shade, #F26A8D);
 }
 
 /* UI Page Options: __page.[dashboard|none-auth]
@@ -277,6 +294,15 @@ a:hover {
 }
 
 /* Typography: */
+.__text {
+  font-size: 1rem;
+  color: #858484;
+  text-align: left;
+  text-indent: 6px;
+  font-weight: normal;
+  line-height: 1.82rem;
+  display: inline-block;
+}
 .__article_title {
   padding: 12px;
   display: flex;
@@ -314,6 +340,27 @@ a:hover {
 }
 
 /*FORMS: */
+.__form_title {
+  padding: 12px;
+  display: flex;
+  flex: 0 0 auto;
+  color: #858484;
+  text-align: left;
+  font-size: .982rem;
+  font-weight: bolder;
+  margin-bottom: 2px;
+  line-height: 1.82rem;
+  align-items: flex-start;
+  justify-items: left;
+  justify-content: left;
+  width: calc(100% - 24px);
+}
+.__form_title.center {
+  text-align: center;
+  align-items: center;
+  justify-items: center;
+  justify-content: center;
+}
 .__form {
   margin: auto;
   padding: 12px;
@@ -332,20 +379,73 @@ a:hover {
   flex-direction: column;
   width: calc(100% - 24px);
 }
-.__form_title {
+.__form_group input,
+.__form_group select,
+.__form_group textarea {
+  margin: 0;
+  outline: 0px;
+  padding: 12px;
+  box-sizing: none;
+  border-width: 1px;
+  border-color: #dadada;
+  width: calc(100% - 24px);
+  max-width: calc(95% - 26px);
+  min-width: calc(95% - 26px);
+}
+.__form_group label {
+  margin-bottom: 10px;
+  font-size: 0.8245rem;
+}
+.__form_action {
+  margin: auto;
   padding: 12px;
   display: flex;
   flex: 0 0 auto;
-  color: #858484;
-  text-align: center;
-  font-size: 1.42rem;
-  font-weight: bolder;
-  margin-bottom: 2px;
-  line-height: 1.82rem;
-  align-items: center;
-  justify-items: center;
-  justify-content: center;
+  border-radius: .4em;
+  flex-direction: row;
   width: calc(100% - 24px);
+  background: whitesmoke;
+}
+.__form_required {
+  color: red;
+  font-weight: 100;
+}
+.__form_error {
+  color: red;
+  margin-top: 4px;
+  font-weight: 100;
+  font-style: italic;
+}
+.__form-notification {
+  gap: 4px;
+  color: #fff;
+  display: flex;
+  padding: 6px;
+  flex: 0 0  auto;
+  margin-top: 6px;
+  font-size: .825rem;
+  flex-direction: row;
+  border-radius: 0.4em;
+  justify-items: center;
+  align-items: flex-start;
+  width: calc(100% - 12px);
+  justify-content: flex-start;
+}
+.__form-notification > * {
+  margin: 0;
+  padding: 0;
+  text-align: left;
+  display: inline-block;
+  width: calc(100% - 24px);
+}
+.__form-notification.error {
+  background: rgb(236, 81, 81) !important;
+}
+.__form-notification.warn{
+  background: rgb(180, 120, 40) !important
+}
+.__form-notification.success{
+  background: rgb(81, 189, 81) !important
 }
 
 
@@ -389,4 +489,15 @@ a:hover {
 }
 .__article_link.__has_icon .__title {
   width: auto;
+}
+
+
+/* LISTS */
+.__list {
+  display: block;
+  padding: 12px;
+  list-style: circle outside;
+  list-style-type: circle;
+  list-style-position: outside;
+  width: calc(100% - 29px);
 }
