@@ -47,6 +47,9 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link" routerLink="/dashboard/add-expense">Add Expense</a>
               </li>
               <li class="__submenu_item">
+                <a class="__link" routerLink="/dashboard/expense-by-id">Expenses by Id</a>
+              </li>
+              <li class="__submenu_item">
                 <a class="__link" routerLink="/dashboard/update-expense">Update Expense</a>
               </li>
               <li class="__submenu_item">
@@ -64,10 +67,13 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link" routerLink="/dashboard/category-list">All Categories</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Add Category</a>
+                <a class="__link" routerLink="/dashboard/add-category">Add Category</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Update Category</a>
+                <a class="__link" routerLink="/dashboard/category-by-id">Category by Id</a>
+              </li>
+              <li class="__submenu_item">
+                <a class="__link" routerLink="/dashboard/update-category">Update Category</a>
               </li>
               <li class="__submenu_item">
                 <a class="__link" href="#">Delete Category</a>

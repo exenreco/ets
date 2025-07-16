@@ -11,7 +11,7 @@ describe('ExpenseByIdComponent', () => {
 
   const mockExpenses: ExpenseWithCategoryName[] = [
   {
-    _id: '123abc',
+    expenseId: 10299,
     userId: 1001,
     categoryId: 456,
     amount: '150.75',
@@ -20,8 +20,8 @@ describe('ExpenseByIdComponent', () => {
     categoryName: 'Business'
   },
   {
-    _id: '456def',
     userId: 1001,
+    expenseId: 10293,
     categoryId: 789,
     amount: '75.50',
     description: 'Lunch meeting',
@@ -68,19 +68,21 @@ describe('ExpenseByIdComponent', () => {
     const selectElement = fixture.nativeElement.querySelector('#expenseSelect');
     const options = selectElement.querySelectorAll('option');
     expect(options.length).toBe(3); // 1 default + 2 expenses
-    expect(options[1].value).toBe('123abc');
-    expect(options[1].textContent.trim()).toBe('Office supplies');
-    expect(options[2].value).toBe('456def');
-    expect(options[2].textContent.trim()).toBe('Lunch meeting');
+    expect(options[1].value).toBe('10299');
+    expect(options[1].textContent.trim()).toBe('ID: 10299 - Office supplies');
+    expect(options[2].value).toBe('10293');
+    expect(options[2].textContent.trim()).toBe('ID: 10293 - Lunch meeting');
   });
 
   it('should find and display selected expense when form is submitted', () => {
     mockExpensesService.getUserExpensesWithCatName.and.returnValue(of(mockExpenses));
-    component.ngOnInit();
+    fixture = TestBed.createComponent(ExpenseByIdComponent);
+    component = fixture.componentInstance;
     fixture.detectChanges();
 
     // Set form value to select first expense
-    component.expenseForm.patchValue({ selectedExpenseId: '123abc' });
+    component.expenseForm.patchValue({ selectedExpenseId: '10299' });
+    fixture.detectChanges();
 
     // Submit form
     component.onSubmit();

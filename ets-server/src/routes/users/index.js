@@ -42,6 +42,24 @@ router.get('/:userId/username', async (req, res, next) => {
     }
 });
 
+// Fetch user first name by user id endpoint:
+// Path: /api/users/:userId/first-name
+router.get('/:userId/first-name', async (req, res, next) => {
+    try {
+        const { userId } = req.params;
+        
+        if( ! userId ) return next(createError( 400, "Missing required param: userId" ));
+
+        const user = await Users.findOne({userId: userId});
+
+        if( user && user['firstName'] ) return res.json(user.firstName);
+        
+        else next(createError(  404, 'invalid, user not found!' ));
+    } catch (err) {
+        return next(createError(500, "Internal server error", { detail: err.message }));
+    }
+});
+
 // Fetch email by user id endpoint:
 // Path: /api/users/:userId/email
 router.get('/:userId/email', async (req, res, next) => {

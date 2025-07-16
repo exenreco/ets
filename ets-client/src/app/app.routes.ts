@@ -19,6 +19,8 @@ import { SettingsComponent } from './settings/settings.component';
 import { ExpenseByIdComponent } from './expenses/expense-by-id/expense-by-id.component';
 import { RequestAdvisorComponent } from './support/request-advisor/request-advisor.component';
 import { CategoryListComponent } from './categories/category-list/category-list.component';
+import { CategoryAddComponent } from './categories/category-add/category-add.component';
+import { CategoryUpdateComponent } from './categories/category-update/category-update.component';
 
 
 /**
@@ -56,10 +58,12 @@ export const authenticatedRoutes: Routes = [
   { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Create a new expense'} },
   { path: 'expense-list', component: ExpenseListComponent, data: {title: 'All expenses'} },
   { path: 'update-expense', component: ExpenseUpdateComponent, data: {title:'Update expenses'} },
+  { path: 'expense-by-id', component: ExpenseByIdComponent, data: {title: 'Expense by Id'} },
+  { path: 'add-category', component: CategoryAddComponent, data: {title: 'Create a new expense category'} },
+  { path: 'update-category', component: CategoryUpdateComponent, data: {title:'Update category'} },
   { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions & answers'} },
   { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
   { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
-  { path: 'expense-by-id', component: ExpenseByIdComponent, data: {title: 'Expense by Id'} },
   { path: 'financial-advisor', component: RequestAdvisorComponent, data: {title:'Request an advisor'} },
   //{ path: 'update-expense', component: },
   //{ path: 'remove-expense', component: },

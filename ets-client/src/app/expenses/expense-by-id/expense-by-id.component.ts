@@ -16,11 +16,11 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 
          @if( userExpenses && userExpenses.length >= 1 ){
           <div class="__form_group">
-            <label for="expenseSelect">Select Expense:</label>
+            <label for="expenseSelect">Select Expense ID:</label>
             <select id="expenseSelect" formControlName="selectedExpenseId" >
-              <option value="">-- Select an expense --</option>
-              <option *ngFor="let expense of userExpenses" [value]="expense._id">
-                {{ expense.description }}
+              <option value="">-- Select an expense ID --</option>
+              <option *ngFor="let expense of userExpenses" [value]="expense.expenseId">
+                ID: {{expense.expenseId}} - {{ expense.description }}
               </option>
             </select>
           </div>
@@ -120,8 +120,11 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
   `
 })
 export class ExpenseByIdComponent implements OnInit, OnDestroy {
+
   userExpenses: ExpenseWithCategoryName[] = [];
+
   selectedExpenseData: ExpenseWithCategoryName | null = null;
+
   expenseForm = this.fb.group({
     selectedExpenseId: ['', Validators.required]
   });
@@ -148,8 +151,10 @@ export class ExpenseByIdComponent implements OnInit, OnDestroy {
 
     const selectedId = this.expenseForm.value.selectedExpenseId;
 
+    const selectedIdInt = parseInt(selectedId!, 10) || null
+
     this.selectedExpenseData = this.userExpenses.find(exp =>
-      exp._id === selectedId
+      exp.expenseId === selectedIdInt
     ) || null;
   }
 

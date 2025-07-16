@@ -23,6 +23,11 @@ export interface ExpenseWithCategoryName extends Expense {
   categoryName?: string;
 }
 
+export interface CategoryTotal {
+  name: string;
+  value: number;
+}
+
 @Injectable({
   providedIn: 'root'
 })

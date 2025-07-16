@@ -3,10 +3,8 @@ import { NgIf } from '@angular/common';
 import { takeUntil } from 'rxjs/operators';
 import { Router, RouterLink } from '@angular/router';
 import { Component, OnInit} from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../security/auth.service';
 import { Expense, ExpensesService } from '../expenses.service';
-import { environment } from '../../../environments/environment';
 import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CategoriesService, Category } from '../../categories/categories.service';
 
@@ -15,7 +13,7 @@ import { CategoriesService, Category } from '../../categories/categories.service
 @Component({
   selector: 'app-expense-update',
   standalone: true,
-  imports: [ ReactiveFormsModule, RouterLink, NgIf],
+  imports: [ ReactiveFormsModule, RouterLink, NgIf ],
   template: `
     <div class="__page __update_expense">
       <div class="__grid columns form_container">

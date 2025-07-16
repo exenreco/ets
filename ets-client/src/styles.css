@@ -119,7 +119,11 @@ a:hover {
   transition: all 400ms ease-in-out;
   text-decoration: underline dotted var(--secondary-color, #DD2D4A);
 }
-
+small {
+  font-weight: normal;
+  font-size: 0.845rem;
+  display: inline-block;
+}
 /*|=====================================================================================|
 **|                               END Global CSS                                        |
 **|====================================================================================*/
@@ -500,4 +504,27 @@ a:hover {
   list-style-type: circle;
   list-style-position: outside;
   width: calc(100% - 29px);
+}
+
+
+/* GRADIENTS */
+.__gradient {
+  margin: 0;
+  border-radius: .8em;
+  position: relative;
+
+}
+.__gradient.whites {
+  color: #858484;
+  background: #CBEEF3;
+  border: 0.2em solid #72979C;
+  box-shadow: 2px 2px 5px 0px rgba(33, 33, 33, 0.55);
+  background: linear-gradient(342deg,rgba(203, 238, 243, 1) 6%, rgba(255, 255, 255, 1) 56%);
+}
+.__gradient.primary {
+  color: #ffffff;
+  background: #DD2D4A;
+  border: 0.2em solid rgba(136, 13, 30, 1);
+  box-shadow: 2px 2px 5px 0px rgba(33, 33, 33, 0.55);
+  background: linear-gradient(159deg,rgba(221, 45, 74, 1) 7%, rgba(136, 13, 30, 1) 81%);
 }

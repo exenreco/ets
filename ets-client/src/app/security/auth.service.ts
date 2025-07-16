@@ -88,6 +88,16 @@ export class AuthService {
       }));
   }
 
+  // return the loggedIn user -> username
+  getFirstName(): any {
+    return this.http
+      .get<string[]>(`${environment.apiBaseUrl}/api/users/${this.getUserId()}/first-name`)
+      .pipe(catchError(error => {
+        console.error('Error fetching user first name:', error);
+        return of('');
+      }));
+  }
+
   // return the loggedIn user -> email
   getUserEmail(): any {
     return this.http
