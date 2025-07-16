@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, catchError, of } from 'rxjs';
+import { Observable, catchError, of, tap } from 'rxjs';
 import { AuthService } from '../security/auth.service';
 import { environment } from '../../environments/environment';
 
 export interface Category {
   name?:        string;
-  userId:       any;
-  categoryId:   any;
+  slug?:        string;
+  userId:       number;
+  categoryId:   number;
   description?: string;
+  dateCreated?: Date;
+  dateModified?: Date;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -43,4 +46,29 @@ export class CategoriesService {
       }));
     else return of([]); // Return empty array on error
   }
+
+  // add a new expense category
+  addCategory( category:Category ): Observable<Category[]>{
+    return this.http
+      .post<Category[]>(`${environment.apiBaseUrl}/api/categories/add-category`, {...category})
+      .pipe(
+        tap(response => {
+          if(response) return response;
+          else return of([]);
+        })
+      );
+  }
+
+  // update existing category
+    updateCategory( category:Category ): Observable<Category[]>{
+      if (!category.categoryId) return of([]);
+      else return this.http
+        .put<Category[]>(`${environment.apiBaseUrl}/api/categories/${category.categoryId}`, {...category})
+        .pipe(
+          tap(response => {
+            if(response) return response;
+            else return of([]);
+          })
+        );
+    }
 }
