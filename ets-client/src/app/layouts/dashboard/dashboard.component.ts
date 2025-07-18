@@ -53,7 +53,7 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
                 <a class="__link" routerLink="/dashboard/update-expense">Update Expense</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Delete Expense</a>
+                <a class="__link" routerLink="/dashboard/delete-expense">Delete Expense</a>
               </li>
             </ul>
           </li>

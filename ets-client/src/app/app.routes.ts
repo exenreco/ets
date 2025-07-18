@@ -13,6 +13,7 @@ import { ForgottenUsernameComponent } from './security/forgotten-username/forgot
 import { ErrorDashboardComponent } from './layouts/dashboard/error-dashboard/error-dashboard.component';
 import { ExpenseListComponent } from './expenses/expense-list/expense-list.component';
 import { ExpenseUpdateComponent } from './expenses/expense-update/expense-update.component';
+import { DeleteExpenseComponent } from './expenses/delete-expense/delete-expense.component';
 import { QAndAComponent } from './support/q-and-a/q-and-a.component';
 import { ContactComponent } from './support/contact/contact.component';
 import { SettingsComponent } from './settings/settings.component';
@@ -21,6 +22,7 @@ import { RequestAdvisorComponent } from './support/request-advisor/request-advis
 import { CategoryListComponent } from './categories/category-list/category-list.component';
 import { CategoryAddComponent } from './categories/category-add/category-add.component';
 import { CategoryUpdateComponent } from './categories/category-update/category-update.component';
+import { CategoryByIdComponent } from './categories/category-by-id/category-by-id.component';
 
 
 /**
@@ -65,9 +67,9 @@ export const authenticatedRoutes: Routes = [
   { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
   { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
   { path: 'financial-advisor', component: RequestAdvisorComponent, data: {title:'Request an advisor'} },
-  //{ path: 'update-expense', component: },
-  //{ path: 'remove-expense', component: },
+  { path: 'delete-expense', component: DeleteExpenseComponent, data: {title:'Delete an expense'} },
   { path: 'category-list', component: CategoryListComponent, data: {title:'All categories'} },
+  { path: 'category-by-id', component: CategoryByIdComponent, data: {title: 'Category by Id'} },
   { path: '**', redirectTo: '/dashboard/404', pathMatch: 'full' },
 ];
 

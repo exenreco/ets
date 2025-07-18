@@ -22,7 +22,7 @@ router.get('', async (req, res, next) => {
     else throw createError(
       404, 'invalid, categories not found!'
     );
-    
+
   } catch (err) {
     next(createError(500, "Internal server error", { detail: err.message }));
   }
@@ -137,7 +137,7 @@ router.post('/add-expense', async (req, res, next) => {
 router.put('/:expenseId', async (req, res, next) => {
   try {
 
-    const 
+    const
       { expenseId } = req.params, // Get ID from URL
       { date, userId, amount, categoryId, description } = req.body
     ;
@@ -203,7 +203,7 @@ router.put('/:expenseId', async (req, res, next) => {
       {new: true, runValidators: true}
     );
 
-    if (!updatedExpense) 
+    if (!updatedExpense)
       return res.status(404).json({ message: 'Expense not found' });
 
     res.status(200).json(updatedExpense);
@@ -222,6 +222,16 @@ router.put('/:expenseId', async (req, res, next) => {
     ));
 
     next(createError(500, "Internal server error", { detail: err.message }));
+  }
+});
+
+router.delete('/:expenseId', async (req, res, next) => {
+  try {
+    await Expenses.deleteOne({ expenseId: req.params.expenseId });
+    res.send({ message: 'Expense deleted successfully', id: req.params.expenseId });
+  } catch (err) {
+    console.error(`Error while deleting expense: ${err}`);
+    next(err);
   }
 });
 

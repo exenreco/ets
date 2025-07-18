@@ -239,6 +239,55 @@ describe('PUT /api/expenses/:expenseId', () => {
   });
 });
 
+describe('DELETE /api/expenses/:expenseId', () => {
+  it('should successfully delete an expense and return confirmation', async () => {
+    const expenseId = '12345';
+
+    // Mock successful deletion
+    Expenses.deleteOne.mockResolvedValue({ deletedCount: 1 });
+
+    const response = await request(app)
+      .delete(`/api/expenses/${expenseId}`) // Add /api prefix
+      .expect(200);
+
+    expect(Expenses.deleteOne).toHaveBeenCalledWith({ expenseId: expenseId });
+    expect(response.body).toEqual({
+      message: 'Expense deleted successfully',
+      id: expenseId
+    });
+  });
+
+  it('should handle deleteOne errors and return 500 status', async () => {
+    const expenseId = '12345';
+    const errorMessage = 'Delete failed';
+
+    // Mock database error
+    Expenses.deleteOne.mockRejectedValue(new Error(errorMessage));
+
+    const response = await request(app)
+      .delete(`/api/expenses/${expenseId}`) // Add /api prefix
+      .expect(500);
+
+    expect(Expenses.deleteOne).toHaveBeenCalledWith({ expenseId: expenseId });
+    expect(response.body.message).toBe('Delete failed');
+  });
+
+  it('should call next with error if deleteOne throws', async () => {
+    const expenseId = '67890';
+    const errorMessage = 'Unexpected error';
+
+    // Mock a different error
+    Expenses.deleteOne.mockRejectedValue(new Error(errorMessage));
+
+    const response = await request(app)
+      .delete(`/api/expenses/${expenseId}`) // Add /api prefix
+      .expect(500);
+
+    expect(Expenses.deleteOne).toHaveBeenCalledWith({ expenseId: expenseId });
+    expect(response.body.message).toBe('Unexpected error');
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });

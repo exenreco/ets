@@ -106,4 +106,19 @@ export class ExpensesService {
         })
       );
   }
+
+  deleteExpense(expenseId: number): Observable<Expense[]> {
+    return this.http
+      .delete<Expense[]>(`${environment.apiBaseUrl}/api/expenses/${expenseId}`)
+      .pipe(
+        tap(response => {
+          if(response) return response;
+          else return of([]);
+        }),
+        catchError(error => {
+          console.error('Error deleting expense:', error);
+          return of([]);
+        })
+      );
+  }
 }
