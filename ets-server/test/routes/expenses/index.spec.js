@@ -239,6 +239,150 @@ describe('PUT /api/expenses/:expenseId', () => {
   });
 });
 
+// search expense endpoint
+describe('Get /api/expenses/:userId', () => {
+
+  it('should return 400 if userId is not a number', async () => {
+    const res = await request(app).get('/api/expenses/not-a-number');
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({ 
+      status: 400,
+      type: "error",
+      message: 'An invalid userId was given.' 
+    });
+    expect(Expenses.find).not.toHaveBeenCalled();
+  });
+
+  it('should return 404 if no matching expense found', async () => {
+    // mock find().exec() to resolve to null
+    Expenses.find.mockReturnValue({
+      exec: jest.fn().mockResolvedValue(null),
+    });
+
+    const res = await request(app).get('/api/expenses/123');
+    expect(Expenses.find).toHaveBeenCalledWith({ userId: 123 });
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({ message: 'no matching expense found' });
+  });
+
+  it('should return 200 and filtered results when query parameters are provided', async () => {
+    const fakeResults = [{ 
+      amount: 50,
+      expenseId: 1, 
+      categoryId: 2,
+      description: 'Coffee', 
+      date: `${new Date('2025-01-01')}`, 
+      dateCreated: `${new Date('2025-01-01')}`,
+      dateModified: `${new Date('2025-01-01')}`,
+      
+    }];
+    // mock find().exec() to resolve to our fakeResults
+    Expenses.find.mockImplementation(filter => ({
+      exec: jest.fn().mockResolvedValue(fakeResults),
+    }));
+
+    const res = await request(app)
+      .get('/api/expenses/42')
+      .query({
+        categoryId: 2,
+        minAmount: '10',
+        maxAmount: '100',
+        description: 'cof',
+        startDate: new Date('2025-01-01'),
+        endDate: new Date('2025-12-31'),
+      });
+
+    // build expected filter object
+    expect(Expenses.find).toHaveBeenCalledWith({
+      userId: 42,
+      description: { $regex: 'cof', $options: 'i' },
+      amount: { $gte: '10', $lte: '100' },
+      date: {
+        $gte: new Date('2025-01-01'),
+        $lte: new Date('2025-12-31'),
+      },
+      categoryId: 2,
+    });
+
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual(fakeResults);
+  });
+});
+
+
+// Delete expense endpoint
+describe('DELETE /api/expenses', () => {
+  it('should successfully delete an expense and return confirmation', async () => {
+    const
+      userId = '10002',
+      expenseId = '12345'
+    ;
+
+    // Mock successful deletion
+    Expenses.findOneAndDelete.mockResolvedValue({ 
+      userId: 10002,
+      expenseId: 12345,
+      amount: '12.99',
+      date: 'jan 12, 2023',
+      description: 'food'
+    });
+
+    const response = await request(app)
+      .delete(`/api/expenses?userId=${userId}&expenseId=${expenseId}`) // Add /api prefix
+      .expect(200);
+
+    expect(Expenses.findOneAndDelete).toHaveBeenCalledWith({
+      userId: parseInt(`${userId}`, 10),
+      expenseId: parseInt(`${expenseId}`, 10)
+    });
+    expect(response.body).toEqual({ message: 'Expense deleted successfully' });
+  });
+
+  it('should handle failed delete and return 500 status', async () => {
+    const 
+      userId = '10002',
+      expenseId = '12345',
+      errorMessage = 'Delete failed'
+    ;
+
+    // Mock database error
+    Expenses.findOneAndDelete.mockRejectedValue(new Error(errorMessage));
+
+    const response = await request(app)
+      .delete(`/api/expenses?userId=${userId}&expenseId=${expenseId}`) // Add /api prefix
+      .expect(500);
+
+    expect(Expenses.findOneAndDelete).toHaveBeenCalledWith({
+      userId: parseInt(`${userId}`, 10),
+      expenseId: parseInt(`${expenseId}`, 10)
+    });
+
+    expect(response.body.message).toBe('Internal server error');
+  });
+
+  it('should call next with error if deleteOne throws', async () => {
+    const 
+      userId = '10002',
+      expenseId = '12345',
+      errorMessage = 'Delete failed'
+    ;
+
+    // Mock a different error
+     Expenses.findOneAndDelete.mockRejectedValue(new Error(errorMessage));
+
+    const response = await request(app)
+      .delete(`/api/expenses?userId=${userId}&expenseId=${expenseId}`) // Add /api prefix
+      .expect(500);
+
+     expect(Expenses.findOneAndDelete).toHaveBeenCalledWith({
+      userId: parseInt(`${userId}`, 10),
+      expenseId: parseInt(`${expenseId}`, 10)
+    });
+
+    expect(response.body.message).toBe('Internal server error');
+  });
+});
+
 afterAll(async () => {
   await mongoose.connection.close();
 });

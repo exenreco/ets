@@ -39,9 +39,10 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
             <table *ngIf="selectedExpenseData" class="expense-page__table">
               <thead class="expense-page__table-head">
                 <tr class="expense-page__table-row">
+                  <th class="expense-page__table-header">ID</th>
+                  <th class="expense-page__table-header">Description</th>
                   <th class="expense-page__table-header">Amount</th>
                   <th class="expense-page__table-header">Category</th>
-                  <th class="expense-page__table-header">Description</th>
                   <th class="expense-page__table-header">Date</th>
                   <!-- <th class="expense-page__table-header">Action</th> -->
 
@@ -50,12 +51,12 @@ import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
               <tbody class="expense-page__table-body">
                 @for (expense of [selectedExpenseData]; track expense) {
                   <tr class="expense-page__table-row">
+                    <td class="expense-page__table-cell">{{ expense.expenseId }}</td>
+                    <td class="expense-page__table-cell">{{ expense.description }}</td>
                     <td class="expense-page__table-cell">{{ expense.amount | currency }}</td>
                     <td class="expense-page__table-cell">{{ expense.categoryName}}</td>
-                    <td class="expense-page__table-cell">{{ expense.description }}</td>
                     <td class="expense-page__table-cell">{{ expense.date | date }}</td>
                     <!-- <td class="expense-page__table-cell">{{ expense.action }}</td> -->
-
                   </tr>
                 }
               </tbody>

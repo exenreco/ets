@@ -116,6 +116,20 @@ export class ExpensesService {
       );
   }
 
+  deleteExpenseByUserId(expenseId: any): Observable<{[key:string]: string}> {
+    return this.http
+      .delete<{[key:string]: string}>(
+        `${environment.apiBaseUrl}/api/expenses` +
+        `?userId=${encodeURI(this.currentUser)}&expenseId=${encodeURI(expenseId)}`
+      )
+      .pipe(
+        tap(response => {
+          if(response) return response;
+          else return of([{message: 'failed to delete expense'}]);
+        })
+      );
+  }
+
   searchExpenses(filters: ExpenseSearchFilters ): Observable<Expense[]> {
     let params = new HttpParams();
 

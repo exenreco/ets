@@ -21,9 +21,9 @@ import { CategoriesService, Category } from '../../categories/categories.service
 
           @if( userExpenses && userExpenses.length >= 1 ){
             <div class="__form_group">
-              <label for="expenseId">Select Expense:</label>
+              <label for="expenseId">Choose an Expense to update:</label>
               <select id="expenseId" name="expenseId" formControlName="expenseId">
-                <option class="expense-option" value="" disabled>Choose an Expense to update</option>
+                <option class="expense-option" value="" disabled>-- Select an Expense --</option>
                 @for (exp of userExpenses; track exp) {
                   <option class="expense-option" [value]="exp.expenseId">{{exp.description}} - \${{ exp.amount }}</option>
                 }

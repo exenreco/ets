@@ -36,7 +36,7 @@ import { Subject, takeUntil } from 'rxjs';
                   <span class="__icon"><i class="fa-solid fa-eye"></i></span>
                   <span class="__title">View all Expense</span>
                 </a></li>
-                <li><a class="__link __has_icon" routerLink="/dashboard/categories-list">
+                <li><a class="__link __has_icon" routerLink="/dashboard/category-list">
                   <span class="__icon"><i class="fa-solid fa-eye"></i></span>
                   <span class="__title">View all Expense Category</span>
                 </a></li>
@@ -269,7 +269,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
         if (this.expenses.length) {
           // create category total
           this.categoryTotal = this.findTopExpenseCategory(res);
-          console.log(this.categoryTotal);
         }
       },
       error: (error: any) => {

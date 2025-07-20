@@ -95,10 +95,11 @@ describe('ExpenseByIdComponent', () => {
     expect(table).toBeTruthy();
 
     const cells = table.querySelectorAll('.expense-page__table-cell');
-    expect(cells[0].textContent.trim()).toContain('$150.75'); // Amount with currency pipe
-    expect(cells[1].textContent.trim()).toBe('Business'); // Category name
-    expect(cells[2].textContent.trim()).toBe('Office supplies'); // Description
-    expect(cells[3].textContent.trim()).toContain('Jul'); // Date with date pipe
+    expect(cells[0].textContent.trim()).toContain('10299'); // id
+    expect(cells[1].textContent.trim()).toBe('Office supplies'); // description
+    expect(cells[2].textContent.trim()).toBe('$150.75'); // amount
+    expect(cells[3].textContent.trim()).toBe('Business'); // category name
+    expect(cells[4].textContent.trim()).toContain('Jul'); // Date with date pipe
   });
 
   it('should handle form submission with invalid selection and show appropriate messages', () => {

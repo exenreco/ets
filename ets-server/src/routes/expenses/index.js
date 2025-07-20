@@ -22,7 +22,7 @@ router.get('', async (req, res, next) => {
     else throw createError(
       404, 'invalid, categories not found!'
     );
-    
+
   } catch (err) {
     next(createError(500, "Internal server error", { detail: err.message }));
   }
@@ -137,7 +137,7 @@ router.post('/add-expense', async (req, res, next) => {
 router.put('/:expenseId', async (req, res, next) => {
   try {
 
-    const 
+    const
       { expenseId } = req.params, // Get ID from URL
       { date, userId, amount, categoryId, description } = req.body
     ;
@@ -203,7 +203,7 @@ router.put('/:expenseId', async (req, res, next) => {
       {new: true, runValidators: true}
     );
 
-    if (!updatedExpense) 
+    if (!updatedExpense)
       return res.status(404).json({ message: 'Expense not found' });
 
     res.status(200).json(updatedExpense);
@@ -226,7 +226,7 @@ router.put('/:expenseId', async (req, res, next) => {
 });
 
 // GET:: end point to Search Expense
-//example: api/expenses/10000?minAmount=12.99&maxAmount=4000&description="food"&startDate...
+//example: api/expenses/10000...
 router.get('/:userId', async (req, res, next) => {
   try {
 
@@ -271,6 +271,48 @@ router.get('/:userId', async (req, res, next) => {
 
     res.status(200).json(results);
 
+  } catch (err) {
+    // Handle Mongoose validation errors
+    if (err.name === 'ValidationError') return next(createError(
+      400,
+      err.message
+    ));
+
+    // Handle duplicate key errors
+    if (err.code === 11000) return next(createError(
+      400,
+      'Duplicate expense detected'
+    ));
+
+    next(createError(500, "Internal server error", { detail: err.message }));
+  }
+});
+
+
+// delete expense endpoint
+router.delete('', async (req, res, next) => {
+  try {
+    const{ userId, expenseId } = req.query;
+
+    const 
+      userIdValue = parseInt(userId, 10), // Parse userId to int
+      expenseIdValue = parseInt(expenseId, 10) // Parse expenseId to int
+    ;
+
+    if (isNaN(userIdValue)) return next(createError(400, "An invalid userId was given."));
+
+    if ( isNaN(expenseIdValue) ) return next(createError(400,"An invalid expense id in url."));
+
+    const deleted = await Expenses.findOneAndDelete({
+      userId: userIdValue,
+      expenseId: expenseIdValue
+    });
+
+    if (!deleted) return res.status(404).json({ message: 'Expense not found' });
+    else return res
+      .status(200)
+      .json({ message: 'Expense deleted successfully' });
+    
   } catch (err) {
     // Handle Mongoose validation errors
     if (err.name === 'ValidationError') return next(createError(
