@@ -38,8 +38,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
               Smarter money management begins here...
             </p>
 
-            <div class="__form_group">
-              <label for="username">Username</label>
+            <div class="__form_group username_container">
+              <label for="username">Username:</label>
               <input
                 type="text"
                 id="username"
@@ -49,13 +49,16 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
                 [class.invalid]="signinForm.get('username')?.invalid && signinForm.get('username')?.touched"
               >
               <div
-                class="error-text"
+                class="__form-notification error"
                 *ngIf="signinForm.get('username')?.invalid && signinForm.get('username')?.touched"
-              >Username is required</div>
+              ><p>Username is required</p></div>
+              <div *ngIf="signinForm.get('username')?.errors?.['pattern'] && signinForm.get('username')?.touched" class="__form-notification error">
+                <p>Username can only contain letters, numbers and underscores</p>
+              </div>
             </div>
 
             <div class="__form_group">
-              <label for="password">Password</label>
+              <label for="password">Password:</label>
               <div class="password_container">
                 <input
                   id="password"
@@ -66,26 +69,28 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
                   [class.invalid]="signinForm.get('password')?.invalid && signinForm.get('password')?.touched"
                 />
                 <button type="button" class="__button toggle-password" (click)="togglePasswordVisibility()">
-                  <span *ngIf="!showPassword">👁️</span>
-                  <span *ngIf="showPassword">🔒</span>
+                  <span *ngIf="!showPassword"><i class="fa-solid fa-eye"></i></span>
+                  <span *ngIf="showPassword"><i class="fa-solid fa-eye-slash"></i></span>
                 </button>
               </div>
               <div
-                class="error-text"
+                class="__form-notification error"
                 *ngIf="signinForm.get('password')?.errors?.['required'] && signinForm.get('password')?.touched"
-              >Password is required</div>
+              ><p>Password is required</p></div>
               <div
-                class="error-text"
+                class="__form-notification error"
                 *ngIf="signinForm.get('password')?.errors?.['pattern'] && signinForm.get('password')?.touched"
-              >Password must contain uppercase, lowercase, and number</div>
+              ><p>
+                - at least one lowercase letter<br>
+                - at least one uppercase letter<br>
+                - at least one digit<br>
+                - only allows letters, digits, underscore, hyphen, dot, and tilde; minimum 8 characters</p>
+              </div>
             </div>
 
-            <div class="__form_action">
-              <div class="grid rows" *ngIf="errorMsg.length > 0">
-                <div
-                  class="__notification error"
-                  *ngFor="let err of errorMsg;"
-                >{{ err }}</div>
+            <div class="__grid rows" *ngIf="errorMsg.length > 0">
+              <div class="__form-notification error" *ngFor="let err of errorMsg;">
+                <p>{{ err }}</p>
               </div>
             </div>
 
@@ -111,7 +116,58 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
       </div>
     </div>
   `,
-  styles: ``
+  styles: `
+    label {
+      font-weight: bold;
+    }
+    .password_container {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      flex: 0 0 auto;
+      background: #fff;
+      flex-direction: row;
+      border-radius: .4em;
+      border: 1px solid #dadada;
+    }
+      .password_container .toggle-password,
+      .password_container input {
+        margin: 0;
+        padding: 0;
+        border: 0px;
+        border-radius: 0;
+      }
+      .password_container input {
+        padding: 12px;
+        width: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+        min-width: calc(100% - 40px);
+        border-top-left-radius: .4em;
+        border-bottom-left-radius: .4em;
+      }
+      .password_container .toggle-password {
+        right: 36px;
+        width: 40px;
+        height: 40px;
+        border-top: none;
+        background: #fff;
+        position: absolute;
+        border-right: none;
+        border-bottom: none;
+        border-top-right-radius: .4em;
+        border-bottom-right-radius: .4em;
+        border-left: 1px solid #dadada;
+        color: var(--secondary-color, #DD2D4A);
+      }
+    .username_container {
+      margin-bottom: 1em;
+    }
+    .username_container input {
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+    }
+  `
 })
 export class SigninComponent implements OnInit {
 
@@ -126,7 +182,7 @@ export class SigninComponent implements OnInit {
     ]],
     password: [ '', [
       Validators.required,
-      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$')
+      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_.~-]{8,}$')
     ]],
   });
 
@@ -161,25 +217,7 @@ export class SigninComponent implements OnInit {
     this.signinForm.markAllAsTouched(); // touch to trigger validation messages
 
     if (!this.signinForm.valid) { // validity check
-
-      if (this.signinForm.get('username')?.invalid) {
-        if (this.signinForm.get('username')?.errors?.['required'])
-          this.errorMsg.push('Username is required');
-
-        if (this.signinForm.get('username')?.errors?.['pattern'])
-          this.errorMsg.push('Username can only contain letters, numbers and underscores');
-      }
-      if (this.signinForm.get('password')?.invalid) {
-
-        if (this.signinForm.get('password')?.errors?.['required'])
-          this.errorMsg.push('Password is required');
-
-        if (this.signinForm.get('password')?.errors?.['pattern'])
-          this.errorMsg.push('Password must be at least 8 characters with an uppercase, lowercase and number');
-      }
-
       this.authService.logout(); // log user out if signin
-
       return;
     }
 

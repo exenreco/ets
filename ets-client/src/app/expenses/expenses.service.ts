@@ -1,13 +1,12 @@
 //import { Expenses } from './expenses';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, catchError, forkJoin, map, of, switchMap, tap } from 'rxjs';
 import { AuthService } from '../security/auth.service';
 import { environment } from '../../environments/environment';
 import { CategoriesService } from '../categories/categories.service';
 
 export interface Expense {
-  _id?:           string;
   date:           string;
   userId:         number;
   amount:         string;
@@ -28,6 +27,16 @@ export interface CategoryTotal {
   value: number;
 }
 
+export interface ExpenseSearchFilters {
+  filter?:      string;
+  endDate?:     Date;
+  startDate?:   Date;
+  minAmount?:   number;
+  maxAmount?:   number;
+  categoryId?:  number;
+  description?: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -35,7 +44,7 @@ export interface CategoryTotal {
 export class ExpensesService {
 
   // The userId of the logged in user
-  currentUSer = this.authService.getUserId();
+  currentUser = this.authService.getUserId();
 
   // is the current user authenticated
   isAuthenticated = this.authService.isAuthenticated();
@@ -59,7 +68,7 @@ export class ExpensesService {
   // Fetches all expenses by userId
   getAllExpensesByUserId(): Observable<Expense[]> {
     return this.http
-      .get<Expense[]>(`${environment.apiBaseUrl}/api/expenses/user/${encodeURI(this.currentUSer)}`)
+      .get<Expense[]>(`${environment.apiBaseUrl}/api/expenses/user/${encodeURI(this.currentUser)}`)
       .pipe(catchError(error => {
         console.error('Error fetching expenses by id:', error);
         return of([]);
@@ -105,5 +114,17 @@ export class ExpensesService {
           else return of([]);
         })
       );
+  }
+
+  searchExpenses(filters: ExpenseSearchFilters ): Observable<Expense[]> {
+    let params = new HttpParams();
+
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value != null && value !== '') {
+        params = params.set(key, String(value));
+      }
+    });
+
+    return this.http.get<Expense[]>(`${environment.apiBaseUrl}/api/expenses/${this.currentUser}`, { params });
   }
 }

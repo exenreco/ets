@@ -17,7 +17,7 @@ describe('DashboardComponent', () => {
   let routerEvents$: Subject<any>;
 
   beforeEach(async () => {
-    const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated']);
+    const authSpy = jasmine.createSpyObj('AuthService', ['isAuthenticated', 'getUserId']);
 
     routerEvents$ = new Subject();
     const routerSpy = jasmine.createSpyObj('Router', ['navigate'], {

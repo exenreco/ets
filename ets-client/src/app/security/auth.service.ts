@@ -128,6 +128,16 @@ export class AuthService {
       }));
   }
 
+  // use to reset user password
+  resetPassword( params: { [key: string]: string} = {email:'',password:'',username:'',confirmPassword:''} ): any {
+    return this.http
+      .patch(`${environment.apiBaseUrl}/api/users/${encodeURI(params['username'])}`, { ...params })
+      .pipe(catchError(error => {
+        console.error('Error resetting user password:', error);
+        return of({message:'Error: 500 internal server error'});
+      }));
+  }
+
   // logs users out
   logout(): void {
 

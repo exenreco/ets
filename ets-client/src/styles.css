@@ -76,16 +76,16 @@ label {
 **======================================================================================*/
 input, textarea, select, button, .__button {
   padding: 12px;
-  box-sizing: 0;
   border-width: 1px;
   border-radius: 4px;
   border-style: solid;
   width: calc(90% - 26px);
   margin: 4px auto 20px auto;
+  box-sizing: border-box;
   border-color: var(--secondary-color, #DD2D4A);
 }
 button:disabled, .__button:disabled {
-  opacity: .2 !important;
+  opacity: .58 !important;
 }
 
 input::placeholder, textarea::placeholder, select {
@@ -103,6 +103,10 @@ input[type="submit"], input[type="button"], .__button {
 input[type="submit"]:hover, input[type="button"]:hover, .__button:hover {
   background-color: #555;
   transition: all 0.3s ease-in-out;
+}
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
 }
 
 a,

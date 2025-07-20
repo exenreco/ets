@@ -126,8 +126,6 @@ router.patch('/:userId', async (req, res, next) => {
             { field, before, after } = req.body
         ;
 
-        console.log(`field ${field}: Before -> ${before}, After -> ${after}...`)
-
         if ( ! userId || ! field || ! before || ! after ) return next(
             createError(401, 'invalid request body')
         );
@@ -243,6 +241,54 @@ router.patch('/:userId', async (req, res, next) => {
 
     } catch (err) {
         return next(createError(500, "Internal server error", err));
+    }
+});
+
+// PATCH:: resets a users password
+router.patch('/:username', async (req, res, next) => {
+    try {
+        const 
+        { username } = req.params,
+
+        { email, password, confirmPassword } = req.body;
+
+        if (!email || !username || !password || !confirmPassword) return res.status(400).json({ 
+            message: 'Email, username, password & confirmPassword are all required.' 
+        });
+
+        if (password !== confirmPassword) return res.status(400).json({ 
+            message: 'Password and confirm password do not match.'
+        });
+
+        if(typeof password !== 'string' || ! passwordRegex.test(password.trim()) ) return res.status(400).json({ 
+            message: 'Invalid password given'
+        });
+
+        const 
+            normalizedEmail = email.trim().toLowerCase(),
+            normalizedUsername = username.trim(),
+            user = await Users.findOne({
+                email: normalizedEmail,
+                username: normalizedUsername
+            })
+        ;
+
+        if (!user) return res.status(404).json({ 
+            message: 'No matching user found.' 
+        });
+
+        // Assign new password (pre-save hook will hash it)
+        user.password = password;
+
+        // Save & trigger hooks (e.g. password hash)
+        await user.save();
+        
+        return res.status(200).json({ 
+            message: 'Password has been reset successfully.'
+        });
+
+    } catch (err) {
+        return next({ message: `500 Internal server error ${err}` });
     }
 });
 

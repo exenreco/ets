@@ -1,9 +1,10 @@
 import { filter } from 'rxjs/operators';
 import { Title } from '@angular/platform-browser';
-import { Component, OnInit } from '@angular/core';
+import { Component, CUSTOM_ELEMENTS_SCHEMA, OnInit } from '@angular/core';
 import { CookieService } from 'ngx-cookie-service';
 import { AuthService } from '../../security/auth.service';
 import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from '@angular/router';
+import { ExpenseSearchComponent } from '../../expenses/expense-search/expense-search.component';
 
 /**
  * DashboardComponent
@@ -18,7 +19,8 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [RouterOutlet, RouterLink],
+  imports: [RouterOutlet, RouterLink, ExpenseSearchComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
     <main class="__dashboard">
 
@@ -28,6 +30,11 @@ import { Router, RouterLink, RouterOutlet, ActivatedRoute, NavigationEnd } from 
           <p class="__tagline">Expense Tracking System</p>
         </section>
         <ul class="__menu_nav">
+          <li class="__nav_item">
+            <div class="__search_container">
+              <app-expense-search></app-expense-search>
+            </div>
+          </li>
           <li class="__nav_item">
             <a class="__link __toggle" style="font-weight:bolder;" routerLink="/dashboard/overview">
               <span class="__icon"><i class="fa-solid fa-chart-simple"></i></span>

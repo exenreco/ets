@@ -225,4 +225,67 @@ router.put('/:expenseId', async (req, res, next) => {
   }
 });
 
+// GET:: end point to Search Expense
+//example: api/expenses/10000?minAmount=12.99&maxAmount=4000&description="food"&startDate...
+router.get('/:userId', async (req, res, next) => {
+  try {
+
+    const userIdValue = parseInt(req.params.userId, 10);
+
+    if (isNaN(userIdValue)) 
+      return next(createError(400, "An invalid userId was given."));
+
+    const 
+      { description, minAmount, maxAmount, startDate, endDate, categoryId } = req.query,
+
+      filter = { userId: userIdValue }
+    ;
+
+
+    if (description) {
+      // Case-insensitive partial match
+      filter.description = { $regex: String(description), $options: 'i' };
+    }
+
+    if (minAmount || maxAmount) {
+      filter.amount = {};
+      if (minAmount) filter.amount.$gte = minAmount; // >=
+      if (maxAmount) filter.amount.$lte = maxAmount; // <=
+    }
+
+    if (startDate || endDate) {
+      filter.date = {};
+      if (startDate) filter.date.$gte = new Date(String(startDate));
+      if (endDate) filter.date.$lte = new Date(String(endDate));
+    }
+
+    if (categoryId) {
+      filter.categoryId = parseInt(String(categoryId), 10);
+    }
+
+    // Execute search
+    const results = await Expenses.find(filter).exec();
+
+    if (!results) 
+      return res.status(404).json({ message: 'no matching expense found' });
+
+    res.status(200).json(results);
+
+  } catch (err) {
+    // Handle Mongoose validation errors
+    if (err.name === 'ValidationError') return next(createError(
+      400,
+      err.message
+    ));
+
+    // Handle duplicate key errors
+    if (err.code === 11000) return next(createError(
+      400,
+      'Duplicate expense detected'
+    ));
+
+    next(createError(500, "Internal server error", { detail: err.message }));
+  }
+});
+
 module.exports = router;

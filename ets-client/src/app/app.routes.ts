@@ -21,6 +21,7 @@ import { RequestAdvisorComponent } from './support/request-advisor/request-advis
 import { CategoryListComponent } from './categories/category-list/category-list.component';
 import { CategoryAddComponent } from './categories/category-add/category-add.component';
 import { CategoryUpdateComponent } from './categories/category-update/category-update.component';
+import { SearchResultsComponent } from './expenses/search-results/search-results.component';
 
 
 /**
@@ -53,7 +54,7 @@ export const userManagementRoutes: Routes = [
  */
 export const authenticatedRoutes: Routes = [
   { path: '', redirectTo: '/dashboard/overview', pathMatch: 'full' },
-  { path: '404', component: ErrorDashboardComponent, data: {title:'Error: 404'} },
+  { path: '404', component: ErrorDashboardComponent, data: {title:'Invalid request'} },
   { path: 'overview', component: OverviewComponent, data: {title:'Account Overview'} },
   { path: 'add-expense', component: ExpenseAddComponent, data: {title:'Create a new expense'} },
   { path: 'expense-list', component: ExpenseListComponent, data: {title: 'All expenses'} },
@@ -63,6 +64,7 @@ export const authenticatedRoutes: Routes = [
   { path: 'update-category', component: CategoryUpdateComponent, data: {title:'Update category'} },
   { path: 'q-and-a', component: QAndAComponent, data: {title:'Questions & answers'} },
   { path: 'contact', component: ContactComponent, data: {title:'Send us a message'} },
+  { path: 'search-results', component: SearchResultsComponent, data: {title:'Search results'} },
   { path: 'account-setting', component: SettingsComponent, data: {title:'Account settings'} },
   { path: 'financial-advisor', component: RequestAdvisorComponent, data: {title:'Request an advisor'} },
   //{ path: 'update-expense', component: },
