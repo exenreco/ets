@@ -60,15 +60,31 @@ export class CategoriesService {
   }
 
   // update existing category
-    updateCategory( category:Category ): Observable<Category[]>{
-      if (!category.categoryId) return of([]);
-      else return this.http
-        .put<Category[]>(`${environment.apiBaseUrl}/api/categories/${category.categoryId}`, {...category})
-        .pipe(
-          tap(response => {
-            if(response) return response;
-            else return of([]);
-          })
-        );
-    }
+  updateCategory( category:Category ): Observable<Category[]>{
+    if (!category.categoryId) return of([]);
+    else return this.http
+      .put<Category[]>(`${environment.apiBaseUrl}/api/categories/${category.categoryId}`, {...category})
+      .pipe(
+        tap(response => {
+          if(response) return response;
+          else return of([]);
+        })
+      );
+  }
+
+  // delete a category by id
+  deleteCategory(categoryId: number): Observable<Category[]> {
+    return this.http
+      .delete<Category[]>(`${environment.apiBaseUrl}/api/categories/${categoryId}`)
+      .pipe(
+        tap(response => {
+          if(response) return response;
+          else return of([]);
+        }),
+        catchError(error => {
+          console.error('Error deleting category:', error);
+          return of([]);
+        })
+      );
+  }
 }

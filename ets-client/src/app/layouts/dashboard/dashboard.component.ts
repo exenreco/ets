@@ -83,7 +83,7 @@ import { ExpenseSearchComponent } from '../../expenses/expense-search/expense-se
                 <a class="__link" routerLink="/dashboard/update-category">Update Category</a>
               </li>
               <li class="__submenu_item">
-                <a class="__link" href="#">Delete Category</a>
+                <a class="__link" routerLink="/dashboard/delete-category">Delete Category</a>
               </li>
             </ul>
           </li>

@@ -15,7 +15,7 @@ const // Requirements
 router.get('/', async (req, res, next) => {
   try {
 
-    const 
+    const
     categories = await Categories.find({}),
     resObj = {
       name:         Category.name,
@@ -40,7 +40,7 @@ router.get('/get-user-categories', async (req, res, next) => {
   try {
 
     const userId  = req.query.userId;
-    
+
     // a userId is required
     if ( ! userId ) throw createError(
       400, 'a userId is required!'
@@ -53,7 +53,7 @@ router.get('/get-user-categories', async (req, res, next) => {
     ));
 
     // record user categories
-    const 
+    const
     categories = await Categories.find({ userId: userIdValue });
 
     if( categories) res.json([...categories]);
@@ -166,7 +166,7 @@ router.post('/add-category', async (req, res, next) => {
 router.put('/:categoryId', async (req, res, next) => {
   try {
 
-    const 
+    const
       { categoryId } = req.params, // Get ID from URL
       { userId, name, slug, description } = req.body
     ;
@@ -221,7 +221,7 @@ router.put('/:categoryId', async (req, res, next) => {
       {new: true, runValidators: true}
     );
 
-    if (!updatedCategory) 
+    if (!updatedCategory)
       return res.status(404).json({ message: 'Category not found' });
 
     res.status(200).json(updatedCategory);
@@ -242,5 +242,17 @@ router.put('/:categoryId', async (req, res, next) => {
     next(createError(500, "Internal server error", { detail: err.message }));
   }
 });
+
+router.delete('/:categoryId', async (req, res, next) => {
+  try {
+    await Categories.deleteOne({ categoryId: req.params.categoryId });
+    res.send({ message: 'Category deleted successfully', id: req.params.categoryId });
+  } catch (err) {
+    console.error(`Error while deleting category: ${err}`);
+    next(err);
+  }
+});
+
+
 
 module.exports = router;
