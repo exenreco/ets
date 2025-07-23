@@ -12,7 +12,7 @@ const // Requirements
 ;
 
 // GET all categories
-router.get('/', async (req, res, next) => {
+router.get('', async (req, res, next) => {
   try {
 
     const
