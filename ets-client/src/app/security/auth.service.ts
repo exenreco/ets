@@ -1,11 +1,23 @@
 import { catchError, tap } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { CookieService } from 'ngx-cookie-service';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { environment } from '../../environments/environment';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
+
+
+export interface User {
+  email: string;
+  userId?: number;
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string; // Optional for security reasons
+  createdOn?: Date;
+  modifiedOn?: Date;
+}
 
 
 @Injectable({
@@ -150,6 +162,30 @@ export class AuthService {
     // Redirect to sign-in page
     this.router.navigate(['signin']);
 
+  }
+
+  registerUser( params: User ): any {
+    return this.http
+      .post<any>(`${environment.apiBaseUrl}/api/users/register`, {
+        email :          params.email,
+        password:        params.password,
+        firstName:       params.firstName,
+        lastName:        params.lastName,
+        username:        params.username,
+      })
+      .pipe(
+      catchError((error: HttpErrorResponse) => {
+        // If your server returns { message: "foo" } or { validation: […] }, pick it:
+        const srvMsg = typeof error.error?.message === 'string'
+          ? error.error.message
+          : Array.isArray(error.error?.message)
+            ? error.error.message.join(', ')
+            : 'Registration failed';
+        // Log the raw server payload if you like
+        console.error('Server error payload:', error.error);
+        return throwError(() => new Error(srvMsg));
+      })
+    );
   }
 
   // Handle API errors

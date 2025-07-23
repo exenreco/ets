@@ -19,10 +19,11 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
             ></div>
           </div>
           <h2 class="__article_title">
-            Placeholder title
+            Having troubles logging in?
           </h2>
           <p class="__article_text">
-            Place holder text
+            It happens to the best of us, but don't worry, we can help you reset your password.
+            <br><br>
             <a class="return_home __article_link __has_icon" routerLink="/">
                 <span class="__icon">
                   <i class="fa-solid fa-arrow-right-to-bracket"></i>
@@ -37,8 +38,8 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 
             <h2 class="__form_title center">Reset Password</h2>
 
-            <p class="__article_text center sm-line-height">
-              some other text goes here...
+            <p class="__article_text center lg-line-height">
+              Enter your email below to retrieve a secure reset link.
             </p>
 
             <div class="__form_group">
@@ -58,81 +59,6 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
                 <p>invalid email pattern</p>
               </div>
             </div>
-            <div class="__form_group">
-              <label for="username">Username:</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                formControlName="username"
-                placeholder="Username"
-              />
-              <div
-                class="__form-notification error"
-                *ngIf="resetPasswordForm.get('username')?.invalid && resetPasswordForm.get('username')?.touched"
-              ><p>Username is required</p></div>
-              <div *ngIf="resetPasswordForm.get('username')?.errors?.['pattern'] && resetPasswordForm.get('username')?.touched" class="__form-notification error">
-                <p>Username can only contain letters, numbers and underscores</p>
-              </div>
-            </div>
-
-            <div class="__form_group special">
-              <label for="password">New Password:</label>
-              <div class="password_container">
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  formControlName="password"
-                  placeholder="New password"
-                  [type]="showPassword ? 'text' : 'password'"
-                  [class.invalid]="resetPasswordForm.get('password')?.invalid && resetPasswordForm.get('password')?.touched"
-                />
-                <button type="button" class="__button toggle-password" (click)="toggleVisibility('password'); $event.stopPropagation()">
-                  <span *ngIf="!showPassword"><i class="fa-solid fa-eye"></i></span>
-                  <span *ngIf="showPassword"><i class="fa-solid fa-eye-slash"></i></span>
-                </button>
-              </div>
-              <div
-                class="__form-notification error"
-                *ngIf="resetPasswordForm.get('password')?.invalid && resetPasswordForm.get('password')?.touched"
-              ><p>a new password is required</p></div>
-              <div
-                *ngIf="resetPasswordForm.get('password')?.errors?.['pattern'] && resetPasswordForm.get('password')?.touched"
-                class="__form-notification error"
-              ><p>
-                - at least one lowercase letter<br>
-                - at least one uppercase letter<br>
-                - at least one digit<br>
-                - only allows letters, digits, underscore, hyphen, dot, and tilde; minimum 8 characters</p>
-              </div>
-            </div>
-
-            <div class="__form_group special">
-              <label for="confirmPassword">Confirm New Password:</label>
-              <div class="password_container">
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  formControlName="confirmPassword"
-                  placeholder="Confirm password"
-                  [type]="showConfirmPassword ? 'text' : 'password'"
-                  [class.invalid]="resetPasswordForm.get('confirmPassword')?.invalid && resetPasswordForm.get('confirmPassword')?.touched"
-                />
-                <button type="button" class="__button toggle-password" (click)="toggleVisibility('confirm'); $event.stopPropagation()">
-                  <span *ngIf="!showConfirmPassword"><i class="fa-solid fa-eye"></i></span>
-                  <span *ngIf="showConfirmPassword"><i class="fa-solid fa-eye-slash"></i></span>
-                </button>
-              </div>
-              <div
-                class="__form-notification error"
-                *ngIf="resetPasswordForm.get('confirmPassword')?.invalid && resetPasswordForm.get('confirmPassword')?.touched"
-              ><p>you must confirm your new password</p></div>
-              <div *ngIf="resetPasswordForm.get('password')?.value !== resetPasswordForm.get('confirmPassword')?.value && resetPasswordForm.get('confirmPassword')?.touched" class="__form-notification error">
-                <p>New password must match confirm password</p>
-              </div>
-            </div>
 
             <div class="__grid rows" *ngIf="notifications.length > 0">
               <div class="__form-notification error" *ngFor="let err of notifications;">
@@ -145,10 +71,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
                 type="submit"
                 class="__button primary"
                 value="Reset Password"
-                [disabled]="
-                  ! resetPasswordForm.valid ||
-                  resetPasswordForm.get('password')?.value !== resetPasswordForm.get('confirmPassword')?.value
-                "
+                [disabled]="! resetPasswordForm.valid"
               />
             </div>
 
@@ -210,10 +133,6 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 })
 export class ForgottenPasswordComponent implements OnInit {
 
-  showPassword: boolean = false;
-
-  showConfirmPassword: boolean = false;
-
   notifications: string[] = [];
 
   constructor(
@@ -226,18 +145,6 @@ export class ForgottenPasswordComponent implements OnInit {
     email: ['', [
       Validators.required,
       Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
-    ]],
-    username: ['', [
-      Validators.required,
-      Validators.pattern('^[a-zA-Z0-9_]+$')
-    ]],
-    password: ['', [
-      Validators.required,
-      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_.~-]{8,}$')
-    ]],
-    confirmPassword: ['', [
-      Validators.required,
-      Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z0-9_.~-]{8,}$')
     ]]
   });
 
@@ -245,11 +152,6 @@ export class ForgottenPasswordComponent implements OnInit {
     // Redirect to dashboard if already logged in
     if (this.authService.isAuthenticated())
       this.router.navigate(['/dashboard']);
-  }
-
-  toggleVisibility(filter:string){
-    if(filter === 'password') this.showPassword = !this.showPassword;
-    if(filter === 'confirm') this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   onReset(): void {
@@ -268,9 +170,6 @@ export class ForgottenPasswordComponent implements OnInit {
 
       params = {
         email:            form.email!,
-        password:         form.password!,
-        username:         form.username!,
-        confirmPassword:  form.confirmPassword!,
       }
     ;
 

@@ -7,30 +7,46 @@
 'use strict'
 
 const 
-  setting = {
-    username: 'etsApp', // This is the username for the database
-    password: 's3cret', // This is the password for the database
-    name: 'expenseTrackingSystem' // This is the name of the database in MongoDB
-  },
-  config = {
-    port: 3000, // This is the default port for MongoDB
-    dbUrl: `mongodb+srv://${setting.username}:${setting.password}@bellevueuniversity.3mpby.mongodb.net/${setting.name}?retryWrites=true&w=majority`,
-    dbname: setting.name // This is the name of the database in MongoDB
-  },
+
+  // Load environment variables from server/.env
+  dotenv = require('dotenv'),
+
+  path = require('path'),
+
   mongoose = require('mongoose')
 ;
 
+dotenv.config({
+  path: path.join(__dirname, '../.env'),
+  quiet: (process.env.NODE_ENV !== 'test')? false : true
+});
+
+const createConnectionString = () => {
+  const
+    user      = process.env.DB_USER || 'etsApp',
+    dbName    = process.env.DB_NAME || 'expenseTrackingSystem',
+    cluster   = process.env.DB_CLUSTER || 'bellevueuniversity.3mpby.mongodb.net',
+    password  = process.env.DB_PASSWORD || 's3cret'; 
+  ;
+  return `mongodb+srv://${user}:${password}@${cluster}/${dbName}?retryWrites=true&w=majority`;
+};
+
+
 // Connect to MongoDB
-mongoose.connect(config.dbUrl, {});
+mongoose.connect(createConnectionString(), {});
 
 // Get connection reference
 const db = mongoose.connection;
 
 // Connection events
 db.on('error', console.error.bind(console, 'Connection error:'));
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
+
+db.once('open', () => 
+  // Log success message if not in test environment
+  (process.env.NODE_ENV !== 'test')
+  ? console.log('Connected to MongoDB successfully')
+  : null
+);
 
 // Export connection
 module.exports = db;

@@ -9,7 +9,7 @@ const
 
         expenseId: { type: Number, required: true, index: true },
 
-        categoryId: { type: String, required: true, index: true },
+        categoryId: { type: Number, required: true, index: true },
 
         amount: { type: Number, required: true, min: 0.01, set: v => parseFloat(v).toFixed(2) },
 

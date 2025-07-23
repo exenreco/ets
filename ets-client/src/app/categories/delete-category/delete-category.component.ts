@@ -5,29 +5,28 @@ import { takeUntil } from 'rxjs/operators';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CategoriesService, Category} from '../categories.service';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
+import { ExpensesService, ExpenseWithCategoryName } from '../../expenses/expenses.service';
+import { RouterLink } from '@angular/router';
 
 
 @Component({
   selector: 'app-delete-category',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
   template: `
     <div class="_page __delete_category">
       <div class="__grid columns form_container">
-        <form [formGroup]="deleteCategoryForm" class="form_container" (ngSubmit)="onSubmit()">
+        <form [formGroup]="deleteCategoryForm" class="form_container" (ngSubmit)="onDelete()">
 
          @if( userCategories && userCategories.length >= 1 ){
           <div class="__form_group">
-            <label for="categorySelect">Select Category:</label>
-            <select id="categorySelect" formControlName="selectedCategoryId" >
+            <label for="categoryId">Choose an Expense Category to delete:</label>
+            <select id="categoryId" name="categoryId" formControlName="categoryId" >
               <option value="">-- Select a category --</option>
               <option *ngFor="let category of userCategories" [value]="category.categoryId">
-                {{ category.name }}
+                ID #: {{ category.categoryId }} - {{ category.name }}
               </option>
             </select>
-          </div>
-          <div class="__form_action">
-            <input type="submit" class="__button tertiary" value="View Category Details" />
           </div>
          } @else {
            <div class="__grid rows no-category">
@@ -37,8 +36,11 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
               </span>
             </div>
           }
+
+
           @if( selectedCategoryData ) {
-            <hr><div class="delete-fields-container">
+            <hr>
+            <div class="delete-fields-container">
               <h2 class="__widget_title">
                 <small>Category Details</small>
                 ID #: {{ selectedCategoryData.categoryId }}
@@ -49,17 +51,17 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
                 <li><b>Description:</b> {{ selectedCategoryData.description }}</li>
                 <li><b>Created On:</b> {{ selectedCategoryData.dateCreated | date }}</li>
               </ul>
-              <form (ngSubmit)="deleteCategory(selectedCategoryData.categoryId)" class="__form_action">
-                <input type="submit" class="__button tertiary" value="Delete"
-                      [disabled]="isDeleting"
-                      (click)="selectedCategoryData.categoryId !== undefined && confirmDelete($event, selectedCategoryData.categoryId, selectedCategoryData.name ?? '')" />
-              </form>
-            </div>
-          } @else {
-            <div class="__grid rows no-category">
-              <span>
-                Please select a category to view details.
-              </span>
+
+              <div class="__grid rows notifications">{{ notification }}</div>
+
+              <div class="__form_action">
+                <input
+                  type="submit"
+                  class="__button tertiary"
+                  value="Delete Category"
+                  [disabled]="deleteCategoryForm.invalid"
+                />
+              </div>
             </div>
           }
         </form>
@@ -175,87 +177,121 @@ import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angula
     }
   `
 })
-export class DeleteCategoryComponent implements OnInit, OnDestroy {
+export class DeleteCategoryComponent implements OnInit {
+
+  // messages
+  notification: string | null = null;
+
   userCategories: Category[] = [];
-  deleteCategoryForm: FormGroup; // Add this line
+
+  userExpenses: ExpenseWithCategoryName[] = [];
+
   selectedCategoryData: Category | null = null;
-  isDeleting: boolean = false;
 
   private destroy$ = new Subject<void>();
 
   constructor(
-    private categoriesService: CategoriesService,
-    private fb: FormBuilder
-  ) {
-    // Initialize the form in constructor
-    this.deleteCategoryForm = this.fb.group({
-      selectedCategoryId: ['', Validators.required]
+
+    private fb: FormBuilder,
+
+    private expensesService: ExpensesService,
+
+    private categoriesService: CategoriesService
+
+  ) {}
+
+  // Initialize the form in constructor
+  deleteCategoryForm = this.fb.group({
+    categoryId: ['', Validators.required]
+  });
+
+  ngOnInit(): void {
+
+    // load user expenses with category names
+    this.expensesService.getUserExpensesWithCatName().subscribe({
+      next: (expenses) => this.userExpenses = expenses,
+      error: (err) => console.error('Failed to load user expenses', err)
+    });
+
+    // Load categories when the component initializes
+    this.categoriesService.getAllCategoriesByUserId().subscribe({
+      next: (categories) => {
+        this.userCategories = categories;
+
+        // Add listener for expense selection changes
+        this.deleteCategoryForm.get('categoryId')?.valueChanges
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(categoryId => {
+          if (categoryId === null) {
+            // handle null case, maybe return early or log error
+            console.warn('Received null categoryId');
+            return;
+          }
+          const parsedCategoryId = parseInt(categoryId, 10);
+          this.handleCategorySelection(parsedCategoryId);
+        });
+      },
+      error: (err) => console.error('Failed to load categories', err)
     });
   }
 
-  ngOnInit(): void {
-    this.categoriesService.getAllCategoriesByUserId()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(categories => {
-        this.userCategories = categories;
-      });
-  }
-
-  onSubmit(): void {
-    if (!this.deleteCategoryForm.valid) {
+  handleCategorySelection(categoryId: number): void {
+    if (!categoryId) {
+      this.selectedCategoryData = null;
       return;
     }
 
-    const selectedId = this.deleteCategoryForm.value.selectedCategoryId;
+    // find category with matching id
+    const category = this.userCategories.find(e => e.categoryId === categoryId);
 
-    console.log('Selected ID (string):', selectedId);
+    this.selectedCategoryData = category || null;
 
-    this.selectedCategoryData = this.userCategories.find(cat => {
-      return cat.categoryId.toString() === (selectedId != null ? selectedId.toString() : ''); // Compare as strings, handle null/undefined
-    }) || null;
-
-    console.log('Selected category data:', this.selectedCategoryData);
+    console.log( this.userCategories);
+    console.log(`Selected category ID: ${categoryId}`, this.selectedCategoryData);
   }
 
-  confirmDelete(event: Event, categoryId: number, name: string): void {
-    event.preventDefault();
-    const confirmed = confirm(`Are you sure you want to delete the category "${name}"? This action cannot be undone.`);
-    if (confirmed) {
-      this.deleteCategory(categoryId);
-    }
+
+  onDelete(): void {
+    // nothing happens on invalid selection
+    if (this.deleteCategoryForm.valid) this.deleteCategory();
+    else this.deleteCategoryForm.markAllAsTouched(); // Mark all fields as touched to show validation errors
   }
 
-  deleteCategory(categoryId: number | undefined) {
-    if (categoryId === undefined) {
+  deleteCategory() {
+    // Clear previous notifications
+    this.notification = null;
+
+    // get the id of the targeted category
+    const categoryId = this.selectedCategoryData?.categoryId;
+
+    if ( ! categoryId ) {
       console.error('Cannot delete category: ID is undefined');
       return;
     }
+    if (this.userExpenses.some(expense => expense.categoryId === categoryId)) {
+      this.notification = `Cannot delete category: ${categoryId}. There are expenses associated with this category. Please delete those expenses first.`;
+      console.warn(this.notification);
+      return;
+    }
 
-    this.isDeleting = true;
 
-    this.categoriesService.deleteCategory(categoryId).subscribe({
-      next: () => {
-        console.log(`Category with ID ${categoryId} deleted successfully.`);
-        this.isDeleting = false;
-        // Optionally, refresh the categories list
-        this.categoriesService.getAllCategoriesByUserId().subscribe(categories => {
-          this.userCategories = categories;
-          this.selectedCategoryData = null; // Clear selected data after deletion
-        });
-      },
-      error: (err) => {
-        console.error('Error deleting category:', err);
-        this.isDeleting = false;
-      }
-    });
-  }
-
-  private refreshUserCategories(): void {
-    this.categoriesService.getAllCategoriesByUserId()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(categories => {
-        this.userCategories = categories;
-    });
+    if( confirm(`Are you sure you want to delete category: ${categoryId}? This action cannot be undone!`) ) {
+      this.categoriesService.deleteCategory(categoryId).subscribe({
+        next: (res) =>  {
+          console.log(`Category with ID ${categoryId} deleted successfully.`);
+          // Optionally, refresh the categories list
+          this.categoriesService.getAllCategoriesByUserId().subscribe(categories => {
+            this.userCategories = categories;
+            this.selectedCategoryData = null; // Clear selected data after deletion
+          });
+          this.notification = `Category: ${categoryId} has successfully been deleted!`;
+        },
+        error: (err) => {
+          console.error('Error deleting category:', err);
+          this.notification = `Error deleting category: ${err.message}`;
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

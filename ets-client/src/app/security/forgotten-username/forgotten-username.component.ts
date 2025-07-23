@@ -1,4 +1,4 @@
-import { NgFor, NgIf } from '@angular/common';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { AuthService } from '../auth.service';
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
@@ -6,7 +6,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 @Component({
   selector: 'app-forgotten-username',
   standalone: true,
-  imports: [RouterLink],
+  imports: [ ReactiveFormsModule, RouterLink, CommonModule],
   template: `
     <div class="__page none-auth registration">
       <div class="__grid columns">
@@ -18,11 +18,12 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
             ></div>
           </div>
           <h2 class="__article_title">
-            Placeholder title
+            Having troubles logging in?
           </h2>
           <p class="__article_text">
-            Place holder text
-            <a class="__article_link __has_icon" routerLink="/">
+            It happens to the best of us, but don't worry, we can help you with figuring out your username.
+            <br><br>
+            <a class="return_home __article_link __has_icon" routerLink="/">
                 <span class="__icon">
                   <i class="fa-solid fa-arrow-right-to-bracket"></i>
                 </span>
@@ -32,21 +33,48 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
         </article>
 
         <aside class="__gutter">
-          <form class="__form">
+          <form class="__form __reset" [formGroup]="resetUsernameForm" (ngSubmit)="onReset()">
 
-            <h2 class="__form_title center">Reset Username</h2>
+            <h2 class="__form_title center">Get Username</h2>
 
-            <p class="__article_text center sm-line-height">
-              some other text goes here...
+            <p class="__article_text center lg-line-height">
+              Enter your email below to retrieve a email containing your username.
             </p>
 
             <div class="__form_group">
-              <label for="username">Some type of input</label>
-              <input type="text" id="username" name="username" placeholder="Some type of input" required />
+              <label for="email">Email:</label>
+              <input
+                type="text"
+                id="email"
+                name="email"
+                formControlName="email"
+                placeholder="example@domain.com"
+              />
+              <div
+                class="__form-notification error"
+                *ngIf="resetUsernameForm.get('email')?.invalid && resetUsernameForm.get('email')?.touched"
+              ><p>an email address is required</p></div>
+              <div *ngIf="resetUsernameForm.get('email')?.errors?.['pattern'] && resetUsernameForm.get('email')?.touched" class="__form-notification error">
+                <p>invalid email pattern</p>
+              </div>
+            </div>
+
+            <div class="__grid rows" *ngIf="notifications.length > 0">
+              <div class="__form-notification error" *ngFor="let err of notifications;">
+                <p>{{ err }}</p>
+              </div>
             </div>
 
             <div class="__form_action">
-              <input type="submit" class="__button primary" value="Reset Username" />
+              <input
+                type="submit"
+                class="__button primary"
+                value="Reset Password"
+                [disabled]="
+                  ! resetUsernameForm.valid ||
+                  resetUsernameForm.get('password')?.value !== resetUsernameForm.get('confirmPassword')?.value
+                "
+              />
             </div>
 
           </form>
@@ -55,19 +83,107 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
       </div>
     </div>
   `,
-  styles: ``
+  styles: `
+    label {
+      font-weight: bold;
+    }
+    .password_container {
+      width: 100%;
+      height: 40px;
+      display: flex;
+      flex: 0 0 auto;
+      background: #fff;
+      flex-direction: row;
+      border-radius: .4em;
+      border: 1px solid #dadada;
+    }
+      .password_container .toggle-password,
+      .password_container input {
+        margin: 0;
+        padding: 0;
+        border: 0px;
+        border-radius: 0;
+      }
+      .password_container input {
+        padding: 12px;
+        width: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+        min-width: calc(100% - 40px);
+        border-top-left-radius: .4em;
+        border-bottom-left-radius: .4em;
+      }
+      .password_container .toggle-password {
+        right: 36px;
+        width: 40px;
+        height: 40px;
+        border-top: none;
+        background: #fff;
+        position: absolute;
+        border-right: none;
+        border-bottom: none;
+        border-top-right-radius: .4em;
+        border-bottom-right-radius: .4em;
+        border-left: 1px solid #dadada;
+        color: var(--secondary-color, #DD2D4A);
+      }
+    .__form_group:not(.special):has(input) input {
+      width: 100%;
+      max-width: 100%;
+      min-width: 100%;
+    }
+  `
 })
 export class ForgottenUsernameComponent implements OnInit {
 
+  notifications: string[] = [];
+
   constructor(
-      private router: Router,
-      private fb: FormBuilder,
-      private authService: AuthService
-    ) {}
+    private router: Router,
+    private fb: FormBuilder,
+    private authService: AuthService
+  ) {}
+
+  resetUsernameForm = this.fb.group({
+    email: ['', [
+      Validators.required,
+      Validators.pattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$')
+    ]]
+  });
 
   ngOnInit(): void {
     // Redirect to dashboard if already logged in
     if (this.authService.isAuthenticated())
       this.router.navigate(['/dashboard']);
   }
+
+  onReset(): void {
+
+    // reset notifications
+    this.notifications = [];
+
+    // touch to trigger validation messages
+    if( !this.resetUsernameForm.valid ) {
+      this.resetUsernameForm.markAllAsTouched();
+      return;
+    }
+
+    const
+      form = this.resetUsernameForm.value,
+      params = {  email: form.email!}
+    ;
+
+    if( confirm('You have requested a password change, confirm to continue.') ){
+      this.authService.resetPassword(params).subscribe({
+        next: (res: any) => {
+          this.notifications.push(res.message);
+          this.resetUsernameForm.reset()
+        },
+        error: (err: any) => {
+          this.notifications.push(err.message);
+          console.log(err.message)
+        }
+      });
+    }
+  }
+
 }

@@ -14,7 +14,7 @@ const
 
       description: { type: String, default: '' },
 
-      categoryId: { type: String, required: true, unique: true },
+      categoryId: { type: Number, required: true, unique: true },
 
       dateCreated: { type: Date, default: Date.now },
 

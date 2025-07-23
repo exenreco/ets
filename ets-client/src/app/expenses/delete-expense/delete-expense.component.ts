@@ -213,7 +213,7 @@ export class DeleteExpenseComponent implements OnInit {
     this.notification = null;
 
     // get the id of the targeted expense
-    const expenseId = this.selectedExpenseData?.expenseId
+    const expenseId = this.selectedExpenseData?.expenseId;
 
     if( ! expenseId ){
       this.onError('There was an error with your changes');

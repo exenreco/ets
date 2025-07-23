@@ -10,10 +10,12 @@ const
 
     bcrypt = require('bcryptjs'),
 
+    mongoose = require('mongoose'),
+
     Users = require('../../models/user'),
 
     createError = require('http-errors'),
-
+    
 
     // regex
 
@@ -23,6 +25,116 @@ const
 
     usernameRegex = /^[a-zA-Z0-9_]+$/
 ;
+
+/**
+ * ROUTE:       api/users
+ * 
+ * ENDPOINT:    register
+ * 
+ * METHOD:      POST
+ * 
+ * DESCRIPTION: Allows users to register with Athena's Expense Tracking System.
+ * 
+ * @Dev Exenreco Bell
+ * 
+ * @Date July 03, 2025
+ * 
+ */
+router.post('/register', async (req, res, next) => {
+
+  try {
+
+    console.log('Registering user:', req.body);
+    
+    const { email, firstName, lastName,  username, password } = req.body;
+    
+    // Basic input validation
+    if ( ! firstName || ! lastName || ! username || ! email || ! password ) 
+      return next(createError( 400, "All fields are required" ));
+
+    // email checks
+    if( ! emailRegex.test(email.toLowerCase().trim()) )
+      return next(createError( 400, "an invalid email was given!" ));
+
+    // username checks
+    if( ! usernameRegex.test(username.trim()) ) 
+      return next(createError( 400, "an invalid username was given!" ));
+
+    // password checks
+    if( ! passwordRegex.test(password.trim()) )
+      return next(createError( 400, "an invalid password was given" ));
+
+    const [emailExists, usernameExists] = await Promise.all([
+        Users.findOne({ email }).collation({ locale: 'en', strength: 2 }),
+        Users.findOne({ username }),
+    ]);
+
+    if (emailExists)
+        return res.status(409).json({
+            message: 'Email already exists, please login or reset your password.'
+        });
+
+    if (usernameExists)
+        return res.status(409).json({
+            message: 'Username already exists, please choose a different username.'
+        });
+    
+    const
+      newUser = new Users({ // Create new users
+        email:      email.toLowerCase().trim(),
+        lastName:   lastName.trim(),
+        username:   username.trim(),
+        firstName:  firstName.trim(),
+        password:   password.trim()
+      }),
+
+      savedUser = await newUser.save(), // Save user => Mongoose should handle schema requirements
+  
+      userResponse = { // curate response => remove sensitive data
+        email:          savedUser.email,
+        userId:         savedUser.userId,
+        lastName:       savedUser.lastName,
+        username:       savedUser.username,
+        firstName:      savedUser.firstName,
+        dateCreated:    savedUser.dateCreated
+      }
+    ;
+
+    return res.status(201).json({
+      user: userResponse,
+      status: 'success',
+      message: `Welcome to the Expense tracking system ${userResponse.username}`
+    });
+      
+  } catch (err) {
+
+    /*if ( err instanceof mongoose.Error.ValidationError ) { // Handle validation errors
+
+      const errors = {};
+
+      Object.keys(err.errors).forEach(key => {
+        errors[key] = err.errors[key].message;
+      });
+
+      return res.status(400).json({ message: errors });
+    }
+    
+    if (err.code === 11000) { // Handle duplicate key errors
+
+      const field = Object.keys(err.keyPattern)[0];
+
+      return res.status(409).json({
+        message: `${field} already exists`
+      });
+
+    }*/
+
+    return res.status(500).json({
+      message: `server error occurred while registering user: ${err.message}`
+    });
+  }
+});
+
 
 // Fetch username by user id endpoint:
 // Path: /api/users/:userId/username
