@@ -39,7 +39,7 @@ export class CategoriesService {
 
   getAllCategoriesByUserId(): Observable<Category[]> {
     if( this.isAuthenticated && this.isAuthenticated === true && this.userId ) return this.http
-      .get<Category[]>(`${environment.apiBaseUrl}/api/categories/get-user-categories?userId=${encodeURI(this.userId)}`)
+      .get<Category[]>(`${environment.apiBaseUrl}/api/categories?userId=${encodeURI(this.userId)}`)
       .pipe(catchError(err => {
           console.error('Error fetching categories:', err);
           return of([]); // Return empty array on error

@@ -15,31 +15,26 @@ const // Requirements
 router.get('', async (req, res, next) => {
   try {
 
-    const
-    categories = await Categories.find({}),
-    resObj = {
-      name:         Category.name,
-      slug:         Category.slug,
-      categoryId:   Category.categoryId,
-      description:  Category.description,
-    };
+    const categories = await Categories.find({});
 
-    if( categories ) res.json(resObj);
-
-    else throw createError(
-      404, 'invalid, categories not found!'
-    );
+    if( ! categories ) throw next(createError(404, 'invalid, categories not found!'));
+    else return res.json([...categories].map(category => ({
+      name:         category.name,
+      slug:         category.slug,
+      categoryId:   category.categoryId,
+      description:  category.description,
+    })));
 
   } catch (err) {
-    next(createError(500, "Internal server error", { detail: err.message }));
+    next(createError(500, "Internal server error", { detail: err }));
   }
 });
 
 // GET: Fetch all categories for specific user
-router.get('/get-user-categories', async (req, res, next) => {
+router.get('', async (req, res, next) => {
   try {
 
-    const userId  = req.query.userId;
+    const { userId }  = req.query;
 
     // a userId is required
     if ( ! userId ) throw createError(
@@ -248,7 +243,6 @@ router.delete('/:categoryId', async (req, res, next) => {
     await Categories.deleteOne({ categoryId: req.params.categoryId });
     res.send({ message: 'Category deleted successfully', id: req.params.categoryId });
   } catch (err) {
-    console.error(`Error while deleting category: ${err}`);
     next(err);
   }
 });

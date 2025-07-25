@@ -1,7 +1,7 @@
 const
     app          = require('../../../src/app'),
     request      = require('supertest'),
-    Expenses     = require('../../../src/models/expense');
+    Expenses     = require('../../../src/models/expense'),
     mongoose     = require('mongoose');
 
 jest.mock('../../../src/models/expense');
